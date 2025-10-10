@@ -37,8 +37,8 @@ $brand_classes = $has_hero_first
 	: 'text-xl font-semibold text-slate-900 transition hover:text-brand';
 
 $nav_classes = $has_hero_first
-	? 'font-medium text-white'
-	: 'font-medium text-slate-600';
+	? 'hidden sm:block font-medium text-white'
+	: 'hidden sm:block font-medium text-slate-600';
 
 $main_classes = $has_hero_first ? 'pt-0' : 'pt-24';
 ?>
@@ -56,7 +56,7 @@ $main_classes = $has_hero_first ? 'pt-0' : 'pt-24';
 					</div>
 				<?php elseif (has_site_icon()) : ?>
 					<a class="inline-flex items-center" href="<?php echo esc_url(home_url('/')); ?>">
-						<img class="h-12 w-auto drop-shadow" src="<?php echo esc_url(get_site_icon_url(192)); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
+						<img class="h-12 w-auto" src="<?php echo esc_url(get_site_icon_url(192)); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
 					</a>
 				<?php else : ?>
 					<a class="<?php echo esc_attr($brand_classes); ?>" href="<?php echo esc_url(home_url('/')); ?>">

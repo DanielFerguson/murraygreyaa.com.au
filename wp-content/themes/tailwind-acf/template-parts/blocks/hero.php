@@ -60,18 +60,18 @@ if (is_array($background_image) && ! empty($background_image['url'])) {
 		<?php endif; ?>
 
 		<?php if ($content) : ?>
-			<p class="max-w-2xl text-lg leading-8 text-slate-200"><?php echo wp_kses_post(nl2br($content)); ?></p>
+			<p class="max-w-2xl text-xl leading-8 text-slate-200"><?php echo wp_kses_post(nl2br($content)); ?></p>
 		<?php endif; ?>
 
 		<?php if ($has_primary || $has_secondary) : ?>
-			<div class="flex flex-wrap items-center gap-4">
+			<div class="flex flex-wrap items-center gap-4 mt-6">
 				<?php if ($has_primary) : ?>
 					<a class="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-base font-semibold text-green-950 shadow transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="<?php echo esc_url($cta_url); ?>">
 						<?php echo esc_html($cta_label); ?>
 					</a>
 				<?php endif; ?>
 				<?php if ($has_secondary) : ?>
-					<a class="inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-semibold text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="<?php echo esc_url($secondary_cta_url); ?>">
+					<a class="hidden sm:inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-semibold text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="<?php echo esc_url($secondary_cta_url); ?>">
 						<?php echo esc_html($secondary_cta_label); ?>
 					</a>
 				<?php endif; ?>

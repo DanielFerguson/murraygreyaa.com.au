@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Theme footer template.
  *
@@ -8,17 +9,21 @@
 </main>
 
 <?php
-$tagline         = get_bloginfo( 'description', 'display' );
-$menu_locations  = get_nav_menu_locations();
-$footer_columns  = array();
-$social_links    = array();
+$tagline           = get_bloginfo('description', 'display');
+$menu_locations    = get_nav_menu_locations();
+$footer_columns    = array();
+$social_links      = array();
+$footer_headline   = trim(get_theme_mod('tailwind_acf_footer_headline'));
+$footer_description = trim(wp_kses_post(get_theme_mod('tailwind_acf_footer_description')));
+$footer_link_text  = trim(get_theme_mod('tailwind_acf_footer_link_text'));
+$footer_link_url   = esc_url(get_theme_mod('tailwind_acf_footer_link_url'));
 
-if ( has_nav_menu( 'footer' ) && ! empty( $menu_locations['footer'] ) ) {
-	$footer_menu_items = wp_get_nav_menu_items( $menu_locations['footer'] );
-	if ( $footer_menu_items ) {
-		foreach ( $footer_menu_items as $item ) {
-			if ( (int) $item->menu_item_parent === 0 ) {
-				$footer_columns[ $item->ID ] = array(
+if (has_nav_menu('footer') && ! empty($menu_locations['footer'])) {
+	$footer_menu_items = wp_get_nav_menu_items($menu_locations['footer']);
+	if ($footer_menu_items) {
+		foreach ($footer_menu_items as $item) {
+			if ((int) $item->menu_item_parent === 0) {
+				$footer_columns[$item->ID] = array(
 					'title'    => $item->title,
 					'url'      => $item->url,
 					'children' => array(),
@@ -26,56 +31,57 @@ if ( has_nav_menu( 'footer' ) && ! empty( $menu_locations['footer'] ) ) {
 			}
 		}
 
-		foreach ( $footer_menu_items as $item ) {
+		foreach ($footer_menu_items as $item) {
 			$parent_id = (int) $item->menu_item_parent;
-			if ( $parent_id && isset( $footer_columns[ $parent_id ] ) ) {
-				$footer_columns[ $parent_id ]['children'][] = $item;
+			if ($parent_id && isset($footer_columns[$parent_id])) {
+				$footer_columns[$parent_id]['children'][] = $item;
 			}
 		}
 
-		foreach ( $footer_columns as $column_id => $column ) {
-			if ( empty( $column['title'] ) ) {
-				unset( $footer_columns[ $column_id ] );
+		foreach ($footer_columns as $column_id => $column) {
+			if (empty($column['title'])) {
+				unset($footer_columns[$column_id]);
 			}
 		}
 
-		$footer_columns = array_values( $footer_columns );
+		$footer_columns = array_values($footer_columns);
 	}
 }
 
-if ( ! function_exists( 'tailwind_acf_get_social_network' ) ) {
+if (! function_exists('tailwind_acf_get_social_network')) {
 	/**
 	 * Infer social network key for a menu item.
 	 *
 	 * @param WP_Post $item Menu item.
 	 * @return string
 	 */
-	function tailwind_acf_get_social_network( $item ) {
+	function tailwind_acf_get_social_network($item)
+	{
 		$candidates = array();
 
-		if ( ! empty( $item->attr_title ) ) {
+		if (! empty($item->attr_title)) {
 			$candidates[] = $item->attr_title;
 		}
 
-		if ( ! empty( $item->title ) ) {
+		if (! empty($item->title)) {
 			$candidates[] = $item->title;
 		}
 
-		if ( ! empty( $item->url ) ) {
-			$host = wp_parse_url( $item->url, PHP_URL_HOST );
-			if ( $host ) {
+		if (! empty($item->url)) {
+			$host = wp_parse_url($item->url, PHP_URL_HOST);
+			if ($host) {
 				$candidates[] = $host;
 			}
 		}
 
-		$candidates = array_filter( $candidates );
+		$candidates = array_filter($candidates);
 
-		$known = array( 'facebook', 'instagram', 'twitter', 'x', 'github', 'youtube', 'linkedin' );
-		foreach ( $candidates as $candidate ) {
-			$candidate = strtolower( $candidate );
-			foreach ( $known as $network ) {
-				if ( false !== strpos( $candidate, $network ) ) {
-					return ( 'twitter' === $network ) ? 'x' : $network;
+		$known = array('facebook', 'instagram', 'twitter', 'x', 'github', 'youtube', 'linkedin');
+		foreach ($candidates as $candidate) {
+			$candidate = strtolower($candidate);
+			foreach ($known as $network) {
+				if (false !== strpos($candidate, $network)) {
+					return ('twitter' === $network) ? 'x' : $network;
 				}
 			}
 		}
@@ -84,15 +90,16 @@ if ( ! function_exists( 'tailwind_acf_get_social_network' ) ) {
 	}
 }
 
-if ( ! function_exists( 'tailwind_acf_get_social_icon_svg' ) ) {
+if (! function_exists('tailwind_acf_get_social_icon_svg')) {
 	/**
 	 * Return SVG markup for a social network.
 	 *
 	 * @param string $network Social network key.
 	 * @return string
 	 */
-	function tailwind_acf_get_social_icon_svg( $network ) {
-		switch ( $network ) {
+	function tailwind_acf_get_social_icon_svg($network)
+	{
+		switch ($network) {
 			case 'facebook':
 				return '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-6 w-6"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" fill-rule="evenodd"/></svg>';
 			case 'instagram':
@@ -111,14 +118,14 @@ if ( ! function_exists( 'tailwind_acf_get_social_icon_svg' ) ) {
 	}
 }
 
-if ( has_nav_menu( 'social' ) && ! empty( $menu_locations['social'] ) ) {
-	$social_menu_items = wp_get_nav_menu_items( $menu_locations['social'] );
-	if ( $social_menu_items ) {
-		foreach ( $social_menu_items as $item ) {
+if (has_nav_menu('social') && ! empty($menu_locations['social'])) {
+	$social_menu_items = wp_get_nav_menu_items($menu_locations['social']);
+	if ($social_menu_items) {
+		foreach ($social_menu_items as $item) {
 			$social_links[] = array(
 				'label'   => $item->title,
 				'url'     => $item->url,
-				'network' => tailwind_acf_get_social_network( $item ),
+				'network' => tailwind_acf_get_social_network($item),
 			);
 		}
 	}
@@ -129,56 +136,79 @@ if ( has_nav_menu( 'social' ) && ! empty( $menu_locations['social'] ) ) {
 	<div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
 		<div class="xl:grid xl:grid-cols-3 xl:gap-8">
 			<div class="space-y-8">
-				<?php if ( has_custom_logo() ) : ?>
-					<div class="flex items-center">
-						<?php the_custom_logo(); ?>
-					</div>
-				<?php else : ?>
-					<span class="text-2xl font-semibold text-slate-900"><?php bloginfo( 'name' ); ?></span>
-				<?php endif; ?>
+				<?php if ($footer_headline || $footer_description || ($footer_link_text && $footer_link_url)) : ?>
+					<?php if ($footer_headline) : ?>
+						<h2 class="text-lg font-semibold text-slate-900">
+							<?php echo esc_html($footer_headline); ?>
+						</h2>
+					<?php endif; ?>
 
-				<?php if ( $tagline ) : ?>
+					<?php if ($footer_description) : ?>
+						<p class="text-balance text-sm leading-6 text-slate-600">
+							<?php echo wp_kses_post(nl2br($footer_description)); ?>
+						</p>
+					<?php endif; ?>
+
+					<?php if ($footer_link_text && $footer_link_url) : ?>
+						<a class="inline-flex items-center gap-2 text-sm font-semibold text-brand transition hover:text-brand-dark" href="<?php echo esc_url($footer_link_url); ?>">
+							<span><?php echo esc_html($footer_link_text); ?></span>
+							<svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3.5 8h9m0 0L8.75 4.25M12.5 8l-3.75 3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+						</a>
+					<?php endif; ?>
+				<?php else : ?>
+					<?php if (has_custom_logo()) : ?>
+						<div class="flex items-center">
+							<?php the_custom_logo(); ?>
+						</div>
+					<?php else : ?>
+						<span class="text-2xl font-semibold text-slate-900">About MGAA</span>
+					<?php endif; ?>
+
 					<p class="text-balance text-sm leading-6 text-slate-600">
-						<?php echo esc_html( $tagline ); ?>
+						<?php echo esc_html($tagline); ?>
+						The Murray Grey Association Australia provides affordable, no-frills registration services for Murray Grey cattle breeders across Australia.
 					</p>
 				<?php endif; ?>
 
-				<?php if ( ! empty( $social_links ) ) : ?>
+				<?php if (! empty($social_links)) : ?>
 					<div class="flex gap-x-6">
-						<?php foreach ( $social_links as $link ) : ?>
-							<a href="<?php echo esc_url( $link['url'] ); ?>" class="text-slate-500 transition hover:text-slate-800">
-								<span class="sr-only"><?php echo esc_html( $link['label'] ); ?></span>
-								<?php echo tailwind_acf_get_social_icon_svg( $link['network'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php foreach ($social_links as $link) : ?>
+							<a href="<?php echo esc_url($link['url']); ?>" class="text-slate-500 transition hover:text-slate-800">
+								<span class="sr-only"><?php echo esc_html($link['label']); ?></span>
+								<?php echo tailwind_acf_get_social_icon_svg($link['network']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
+								?>
 							</a>
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
 			</div>
 
-			<?php if ( ! empty( $footer_columns ) ) : ?>
+			<?php if (! empty($footer_columns)) : ?>
 				<div class="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
 					<?php
-					$column_groups = array_chunk( $footer_columns, 2 );
-					foreach ( $column_groups as $group_index => $group ) :
-						?>
+					$column_groups = array_chunk($footer_columns, 2);
+					foreach ($column_groups as $group_index => $group) :
+					?>
 						<div class="md:grid md:grid-cols-2 md:gap-8">
-							<?php foreach ( $group as $index => $column ) : ?>
-								<div class="<?php echo ( 0 !== $index ) ? 'mt-10 md:mt-0' : ''; ?>">
+							<?php foreach ($group as $index => $column) : ?>
+								<div class="<?php echo (0 !== $index) ? 'mt-10 md:mt-0' : ''; ?>">
 									<h3 class="text-sm font-semibold leading-6 text-slate-900">
-										<?php if ( ! empty( $column['url'] ) ) : ?>
-											<a class="hover:text-brand" href="<?php echo esc_url( $column['url'] ); ?>">
-												<?php echo esc_html( $column['title'] ); ?>
+										<?php if (! empty($column['url'])) : ?>
+											<a class="hover:text-brand" href="<?php echo esc_url($column['url']); ?>">
+												<?php echo esc_html($column['title']); ?>
 											</a>
 										<?php else : ?>
-											<?php echo esc_html( $column['title'] ); ?>
+											<?php echo esc_html($column['title']); ?>
 										<?php endif; ?>
 									</h3>
-									<?php if ( ! empty( $column['children'] ) ) : ?>
+									<?php if (! empty($column['children'])) : ?>
 										<ul role="list" class="mt-6 space-y-4">
-											<?php foreach ( $column['children'] as $child ) : ?>
+											<?php foreach ($column['children'] as $child) : ?>
 												<li>
-													<a class="text-sm leading-6 text-slate-600 transition hover:text-slate-900" href="<?php echo esc_url( $child->url ); ?>">
-														<?php echo esc_html( $child->title ); ?>
+													<a class="text-sm leading-6 text-slate-600 transition hover:text-slate-900" href="<?php echo esc_url($child->url); ?>">
+														<?php echo esc_html($child->title); ?>
 													</a>
 												</li>
 											<?php endforeach; ?>
@@ -189,7 +219,7 @@ if ( has_nav_menu( 'social' ) && ! empty( $menu_locations['social'] ) ) {
 						</div>
 					<?php endforeach; ?>
 				</div>
-			<?php elseif ( has_nav_menu( 'footer' ) ) : ?>
+			<?php elseif (has_nav_menu('footer')) : ?>
 				<nav class="mt-16 xl:col-span-2 xl:mt-0">
 					<?php
 					wp_nav_menu(
@@ -205,14 +235,23 @@ if ( has_nav_menu( 'social' ) && ! empty( $menu_locations['social'] ) ) {
 			<?php endif; ?>
 		</div>
 
-		<div class="mt-16 border-t border-slate-200 pt-8 sm:mt-20 lg:mt-24">
+		<div class="mt-16 border-t border-slate-200 pt-8 sm:mt-20 lg:mt-24 flex flex-row justify-between">
 			<p class="text-sm leading-6 text-slate-600">
-				&copy; <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'All rights reserved.', 'tailwind-acf' ); ?>
+				&copy; <?php echo esc_html(date_i18n('Y')); ?> <?php bloginfo('name'); ?>. <?php esc_html_e('All rights reserved.', 'tailwind-acf'); ?>
 			</p>
+			<div class="flex flex-row gap-6">
+				<a href="<?php echo esc_url(home_url('/privacy-policy')); ?>" class="text-sm leading-6 text-slate-600">
+					Privacy Policy
+				</a>
+				<a href="<?php echo esc_url(home_url('/contact-us')); ?>" class="text-sm leading-6 text-slate-600">
+					Contact Us
+				</a>
+			</div>
 		</div>
 	</div>
 </footer>
 
 <?php wp_footer(); ?>
 </body>
+
 </html>

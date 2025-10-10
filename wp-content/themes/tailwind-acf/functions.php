@@ -113,6 +113,95 @@ if ( file_exists( $block_loader ) ) {
 	require_once $block_loader;
 }
 
+add_action(
+	'customize_register',
+	function ( $wp_customize ) {
+		$wp_customize->add_section(
+			'tailwind_acf_footer',
+			array(
+				'title'       => __( 'Footer Content', 'tailwind-acf' ),
+				'description' => __( 'Control the headline, description, and CTA link shown on the left side of the footer.', 'tailwind-acf' ),
+				'priority'    => 160,
+			)
+		);
+
+		$wp_customize->add_setting(
+			'tailwind_acf_footer_headline',
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			'tailwind_acf_footer_headline',
+			array(
+				'label'   => __( 'Headline', 'tailwind-acf' ),
+				'section' => 'tailwind_acf_footer',
+				'type'    => 'text',
+			)
+		);
+
+		$wp_customize->add_setting(
+			'tailwind_acf_footer_description',
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'wp_kses_post',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			'tailwind_acf_footer_description',
+			array(
+				'label'   => __( 'Description', 'tailwind-acf' ),
+				'section' => 'tailwind_acf_footer',
+				'type'    => 'textarea',
+			)
+		);
+
+		$wp_customize->add_setting(
+			'tailwind_acf_footer_link_text',
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			'tailwind_acf_footer_link_text',
+			array(
+				'label'   => __( 'Link Text', 'tailwind-acf' ),
+				'section' => 'tailwind_acf_footer',
+				'type'    => 'text',
+			)
+		);
+
+		$wp_customize->add_setting(
+			'tailwind_acf_footer_link_url',
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'esc_url_raw',
+				'transport'         => 'refresh',
+			)
+		);
+
+		$wp_customize->add_control(
+			'tailwind_acf_footer_link_url',
+			array(
+				'label'       => __( 'Link URL', 'tailwind-acf' ),
+				'section'     => 'tailwind_acf_footer',
+				'type'        => 'url',
+				'input_attrs' => array(
+					'placeholder' => 'https://example.com/about',
+				),
+			)
+		);
+	}
+);
+
 add_filter(
 	'body_class',
 	function ( $classes ) {

@@ -99,6 +99,33 @@ add_action(
 			)
 		);
 
+		acf_register_block_type(
+			array(
+				'name'            => 'tailwind-contact-form',
+				'title'           => __( 'Tailwind Contact Form', 'tailwind-acf' ),
+				'description'     => __( 'A responsive contact form with customizable intro copy.', 'tailwind-acf' ),
+				'render_template' => get_theme_file_path( 'template-parts/blocks/contact-form.php' ),
+				'category'        => 'widgets',
+				'icon'            => 'email',
+				'keywords'        => array( 'contact', 'form', 'tailwind', 'acf' ),
+				'supports'        => array(
+					'align'          => array( 'full', 'wide' ),
+					'anchor'         => true,
+					'customClassName'=> true,
+				),
+				'example'         => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'heading' => __( 'Let’s talk', 'tailwind-acf' ),
+							'intro'   => __( 'Share a few details and the team will respond within two business days.', 'tailwind-acf' ),
+							'submit_label' => __( 'Send message', 'tailwind-acf' ),
+						),
+					),
+				),
+			)
+		);
+
 		acf_add_local_field_group(
 			array(
 				'key'      => 'group_tailwind_hero',
@@ -292,6 +319,53 @@ add_action(
 							'param'    => 'block',
 							'operator' => '==',
 							'value'    => 'acf/tailwind-feature-grid',
+						),
+					),
+				),
+			)
+		);
+
+		acf_add_local_field_group(
+			array(
+				'key'      => 'group_tailwind_contact_form',
+				'title'    => __( 'Tailwind Contact Form', 'tailwind-acf' ),
+				'fields'   => array(
+					array(
+						'key'       => 'field_tailwind_contact_heading',
+						'label'     => __( 'Heading', 'tailwind-acf' ),
+						'name'      => 'heading',
+						'type'      => 'text',
+						'required'  => 1,
+					),
+					array(
+						'key'       => 'field_tailwind_contact_intro',
+						'label'     => __( 'Intro Text', 'tailwind-acf' ),
+						'name'      => 'intro',
+						'type'      => 'textarea',
+						'rows'      => 3,
+					),
+					array(
+						'key'       => 'field_tailwind_contact_submit_label',
+						'label'     => __( 'Submit Button Label', 'tailwind-acf' ),
+						'name'      => 'submit_label',
+						'type'      => 'text',
+						'default_value' => __( 'Send message', 'tailwind-acf' ),
+					),
+					array(
+						'key'       => 'field_tailwind_contact_success_message',
+						'label'     => __( 'Success Message', 'tailwind-acf' ),
+						'name'      => 'success_message',
+						'type'      => 'textarea',
+						'rows'      => 3,
+						'default_value' => __( 'Thanks for reaching out. We will respond shortly.', 'tailwind-acf' ),
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'block',
+							'operator' => '==',
+							'value'    => 'acf/tailwind-contact-form',
 						),
 					),
 				),
