@@ -41,6 +41,9 @@ wp-config.php
 # uncomment the next line
 #/wp-content/plugins
 
+# Commercial plugins (keep out of version control)
+/wp-content/plugins/advanced-custom-fields-pro/
+
 # All themes
 # Note: If you wish to whitelist themes,
 # uncomment the next line
