@@ -36,13 +36,4 @@ wp-config.php
 # htaccess
 /.htaccess
 
-# Commercial plugins (keep out of version control)
-/wp-content/plugins/advanced-custom-fields-pro/
-/wp-content/plugins/wpforms-lite/
-
-# All themes
-# Note: If you wish to whitelist themes,
-# uncomment the next line
-#/wp-content/themes
-
 # End of https://www.toptal.com/developers/gitignore/api/wordpress
