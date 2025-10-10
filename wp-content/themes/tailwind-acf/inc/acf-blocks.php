@@ -69,6 +69,36 @@ add_action(
 			)
 		);
 
+		acf_register_block_type(
+			array(
+				'name'            => 'tailwind-cta-banner',
+				'title'           => __( 'Tailwind CTA Banner', 'tailwind-acf' ),
+				'description'     => __( 'A prominent call-to-action strip with optional secondary link.', 'tailwind-acf' ),
+				'render_template' => get_theme_file_path( 'template-parts/blocks/cta-banner.php' ),
+				'category'        => 'layout',
+				'icon'            => 'megaphone',
+				'keywords'        => array( 'cta', 'call to action', 'tailwind', 'button' ),
+				'supports'        => array(
+					'align'          => array( 'full', 'wide' ),
+					'anchor'         => true,
+					'customClassName'=> true,
+				),
+				'example'         => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'heading'           => __( 'Join the Murray Grey Community', 'tailwind-acf' ),
+							'body_text'         => __( 'Connect with fellow breeders and access exclusive resources tailored for members.', 'tailwind-acf' ),
+							'primary_label'     => __( 'Become a Member', 'tailwind-acf' ),
+							'primary_url'       => '#',
+							'secondary_label'   => __( 'Contact Us', 'tailwind-acf' ),
+							'secondary_url'     => '#',
+						),
+					),
+				),
+			)
+		);
+
 		acf_add_local_field_group(
 			array(
 				'key'      => 'group_tailwind_hero',
@@ -131,6 +161,72 @@ add_action(
 							'param'    => 'block',
 							'operator' => '==',
 							'value'    => 'acf/tailwind-hero',
+						),
+					),
+				),
+			)
+		);
+
+		acf_add_local_field_group(
+			array(
+				'key'      => 'group_tailwind_cta_banner',
+				'title'    => __( 'Tailwind CTA Banner', 'tailwind-acf' ),
+				'fields'   => array(
+					array(
+						'key'   => 'field_tailwind_cta_heading',
+						'label' => __( 'Heading', 'tailwind-acf' ),
+						'name'  => 'heading',
+						'type'  => 'text',
+						'required' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_cta_body',
+						'label' => __( 'Supporting Text', 'tailwind-acf' ),
+						'name'  => 'body_text',
+						'type'  => 'textarea',
+						'rows'  => 3,
+					),
+					array(
+						'key'   => 'field_tailwind_cta_primary_label',
+						'label' => __( 'Primary CTA Label', 'tailwind-acf' ),
+						'name'  => 'primary_label',
+						'type'  => 'text',
+						'required' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_cta_primary_url',
+						'label' => __( 'Primary CTA URL', 'tailwind-acf' ),
+						'name'  => 'primary_url',
+						'type'  => 'url',
+						'required' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_cta_secondary_label',
+						'label' => __( 'Secondary CTA Label', 'tailwind-acf' ),
+						'name'  => 'secondary_label',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_tailwind_cta_secondary_url',
+						'label' => __( 'Secondary CTA URL', 'tailwind-acf' ),
+						'name'  => 'secondary_url',
+						'type'  => 'url',
+					),
+					array(
+						'key'   => 'field_tailwind_cta_background_image',
+						'label' => __( 'Background Image', 'tailwind-acf' ),
+						'name'  => 'background_image',
+						'type'  => 'image',
+						'return_format' => 'array',
+						'preview_size'  => 'medium',
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'block',
+							'operator' => '==',
+							'value'    => 'acf/tailwind-cta-banner',
 						),
 					),
 				),
@@ -261,18 +357,6 @@ add_action(
 						'type'  => 'true_false',
 						'ui'    => 1,
 						'default_value' => 1,
-					),
-					array(
-						'key'   => 'field_tailwind_latest_news_cta_label',
-						'label' => __( 'Section CTA Label', 'tailwind-acf' ),
-						'name'  => 'section_cta_label',
-						'type'  => 'text',
-					),
-					array(
-						'key'   => 'field_tailwind_latest_news_cta_url',
-						'label' => __( 'Section CTA URL', 'tailwind-acf' ),
-						'name'  => 'section_cta_url',
-						'type'  => 'url',
 					),
 				),
 				'location' => array(
