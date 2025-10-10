@@ -34,6 +34,8 @@ add_action(
 							'content'       => __( 'Use Tailwind utility classes right inside the block editor.', 'tailwind-acf' ),
 							'cta_label'     => __( 'Get started', 'tailwind-acf' ),
 							'cta_url'       => '#',
+							'secondary_cta_label' => __( 'Learn more', 'tailwind-acf' ),
+							'secondary_cta_url'   => '#',
 							'eyebrow'       => __( 'Announcement', 'tailwind-acf' ),
 						),
 					),
@@ -110,6 +112,18 @@ add_action(
 						'name'  => 'cta_url',
 						'type'  => 'url',
 					),
+					array(
+						'key'   => 'field_tailwind_hero_secondary_cta_label',
+						'label' => __( 'Secondary CTA Label', 'tailwind-acf' ),
+						'name'  => 'secondary_cta_label',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_tailwind_hero_secondary_cta_url',
+						'label' => __( 'Secondary CTA URL', 'tailwind-acf' ),
+						'name'  => 'secondary_cta_url',
+						'type'  => 'url',
+					),
 				),
 				'location' => array(
 					array(
@@ -182,6 +196,91 @@ add_action(
 							'param'    => 'block',
 							'operator' => '==',
 							'value'    => 'acf/tailwind-feature-grid',
+						),
+					),
+				),
+			)
+		);
+
+		acf_register_block_type(
+			array(
+				'name'            => 'tailwind-latest-news',
+				'title'           => __( 'Tailwind Latest News', 'tailwind-acf' ),
+				'description'     => __( 'Displays the latest three posts in a Tailwind-styled layout.', 'tailwind-acf' ),
+				'render_template' => get_theme_file_path( 'template-parts/blocks/latest-news.php' ),
+				'category'        => 'widgets',
+				'icon'            => 'megaphone',
+				'keywords'        => array( 'news', 'posts', 'blog', 'tailwind' ),
+				'supports'        => array(
+					'align'        => array( 'full', 'wide', 'center' ),
+					'anchor'       => true,
+					'customClassName' => true,
+				),
+				'example'         => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'section_heading' => __( 'Latest News', 'tailwind-acf' ),
+							'section_intro'   => __( 'Stay up-to-date with what is happening across the association.', 'tailwind-acf' ),
+						),
+					),
+				),
+			)
+		);
+
+		acf_add_local_field_group(
+			array(
+				'key'      => 'group_tailwind_latest_news',
+				'title'    => __( 'Tailwind Latest News', 'tailwind-acf' ),
+				'fields'   => array(
+					array(
+						'key'   => 'field_tailwind_latest_news_heading',
+						'label' => __( 'Section Heading', 'tailwind-acf' ),
+						'name'  => 'section_heading',
+						'type'  => 'text',
+						'default_value' => __( 'Latest News', 'tailwind-acf' ),
+					),
+					array(
+						'key'   => 'field_tailwind_latest_news_intro',
+						'label' => __( 'Section Intro', 'tailwind-acf' ),
+						'name'  => 'section_intro',
+						'type'  => 'textarea',
+					),
+					array(
+						'key'   => 'field_tailwind_latest_news_show_date',
+						'label' => __( 'Show Published Date', 'tailwind-acf' ),
+						'name'  => 'show_date',
+						'type'  => 'true_false',
+						'ui'    => 1,
+						'default_value' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_latest_news_show_excerpt',
+						'label' => __( 'Show Excerpt', 'tailwind-acf' ),
+						'name'  => 'show_excerpt',
+						'type'  => 'true_false',
+						'ui'    => 1,
+						'default_value' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_latest_news_cta_label',
+						'label' => __( 'Section CTA Label', 'tailwind-acf' ),
+						'name'  => 'section_cta_label',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_tailwind_latest_news_cta_url',
+						'label' => __( 'Section CTA URL', 'tailwind-acf' ),
+						'name'  => 'section_cta_url',
+						'type'  => 'url',
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'block',
+							'operator' => '==',
+							'value'    => 'acf/tailwind-latest-news',
 						),
 					),
 				),

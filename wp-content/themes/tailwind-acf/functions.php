@@ -111,3 +111,28 @@ $block_loader = __DIR__ . '/inc/acf-blocks.php';
 if ( file_exists( $block_loader ) ) {
 	require_once $block_loader;
 }
+
+add_filter(
+	'body_class',
+	function ( $classes ) {
+		if ( is_singular() ) {
+			$post = get_post();
+			if ( $post && has_block( 'acf/tailwind-hero', $post ) ) {
+				$blocks = parse_blocks( $post->post_content );
+				foreach ( $blocks as $block ) {
+					if ( empty( $block['blockName'] ) ) {
+						continue;
+					}
+
+					if ( 'acf/tailwind-hero' === $block['blockName'] ) {
+						$classes[] = 'has-hero-first';
+					}
+
+					break;
+				}
+			}
+		}
+
+		return array_unique( $classes );
+	}
+);
