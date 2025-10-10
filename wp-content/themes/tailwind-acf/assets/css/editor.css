@@ -1,0 +1,154 @@
+.editor-styles-wrapper {
+	background-color: #f8fafc;
+	color: #0f172a;
+	font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	padding: 3rem 2rem;
+	max-width: 740px;
+	margin: 0 auto;
+}
+
+.editor-styles-wrapper:focus-within {
+	box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.15);
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper h6 {
+	color: #0f172a;
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 2.5rem 0 1.25rem;
+}
+
+.editor-styles-wrapper h1 {
+	font-size: clamp(2.25rem, 3vw, 3rem);
+}
+
+.editor-styles-wrapper h2 {
+	font-size: clamp(1.875rem, 2.5vw, 2.5rem);
+}
+
+.editor-styles-wrapper h3 {
+	font-size: clamp(1.5rem, 2vw, 2rem);
+}
+
+.editor-styles-wrapper h4 {
+	font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+}
+
+.editor-styles-wrapper h5 {
+	font-size: 1.125rem;
+}
+
+.editor-styles-wrapper h6 {
+	font-size: 1rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.editor-styles-wrapper p,
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol,
+.editor-styles-wrapper blockquote {
+	margin: 1.25rem 0;
+	line-height: 1.8;
+}
+
+.editor-styles-wrapper strong {
+	color: #0f172a;
+}
+
+.editor-styles-wrapper em {
+	color: #1f2937;
+}
+
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol {
+	padding-left: 1.5rem;
+}
+
+.editor-styles-wrapper ul li {
+	list-style-type: disc;
+}
+
+.editor-styles-wrapper ol li {
+	list-style-type: decimal;
+}
+
+.editor-styles-wrapper blockquote {
+	border-left: 4px solid #2563eb;
+	background: rgba(37, 99, 235, 0.08);
+	padding: 1.5rem 1.75rem;
+	color: #1d4ed8;
+	font-style: italic;
+}
+
+.editor-styles-wrapper figure {
+	margin: 2.5rem 0;
+}
+
+.editor-styles-wrapper figcaption {
+	color: #64748b;
+	font-size: 0.875rem;
+	margin-top: 0.75rem;
+	text-align: center;
+}
+
+.editor-styles-wrapper pre {
+	background: #0f172a;
+	color: #e2e8f0;
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	overflow-x: auto;
+}
+
+.editor-styles-wrapper a {
+	color: #2563eb;
+	text-decoration: none;
+	border-bottom: 1px solid rgba(37, 99, 235, 0.35);
+	transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.editor-styles-wrapper a:hover,
+.editor-styles-wrapper a:focus {
+	color: #1d4ed8;
+	border-color: rgba(29, 78, 216, 0.6);
+}
+
+.editor-styles-wrapper hr {
+	border: none;
+	border-top: 1px solid rgba(15, 23, 42, 0.1);
+	margin: 3rem 0;
+}
+
+.editor-styles-wrapper .wp-block {
+	margin-top: 0;
+	margin-bottom: 2.5rem;
+}
+
+.editor-styles-wrapper .wp-block-cover {
+	color: #fff;
+}
+
+.editor-styles-wrapper .wp-block-button__link {
+	border-radius: 999px;
+	padding: 0.9rem 1.8rem;
+	font-weight: 600;
+	background: #2563eb;
+	color: #fff;
+}
+
+.editor-styles-wrapper .wp-block-button__link:hover {
+	background: #1d4ed8;
+}
+
+.editor-styles-wrapper .is-style-outline .wp-block-button__link {
+	background: transparent;
+	border: 2px solid #2563eb;
+	color: #2563eb;
+}

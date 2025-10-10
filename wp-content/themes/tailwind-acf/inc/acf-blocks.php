@@ -101,13 +101,13 @@ add_action(
 
 		acf_register_block_type(
 			array(
-				'name'            => 'tailwind-contact-form',
-				'title'           => __( 'Tailwind Contact Form', 'tailwind-acf' ),
-				'description'     => __( 'A responsive contact form with customizable intro copy.', 'tailwind-acf' ),
-				'render_template' => get_theme_file_path( 'template-parts/blocks/contact-form.php' ),
-				'category'        => 'widgets',
-				'icon'            => 'email',
-				'keywords'        => array( 'contact', 'form', 'tailwind', 'acf' ),
+				'name'            => 'tailwind-photo-carousel',
+				'title'           => __( 'Tailwind Photo Carousel', 'tailwind-acf' ),
+				'description'     => __( 'Displays a scrolling gallery that features three photos at a time.', 'tailwind-acf' ),
+				'render_template' => 'template-parts/blocks/photo-carousel.php',
+				'category'        => 'media',
+				'icon'            => 'images-alt2',
+				'keywords'        => array( 'carousel', 'gallery', 'photos', 'slider' ),
 				'supports'        => array(
 					'align'          => array( 'full', 'wide' ),
 					'anchor'         => true,
@@ -117,9 +117,34 @@ add_action(
 					'attributes' => array(
 						'mode' => 'preview',
 						'data' => array(
-							'heading' => __( 'Let’s talk', 'tailwind-acf' ),
-							'intro'   => __( 'Share a few details and the team will respond within two business days.', 'tailwind-acf' ),
-							'submit_label' => __( 'Send message', 'tailwind-acf' ),
+							'heading' => __( 'Life on the farm', 'tailwind-acf' ),
+						),
+					),
+				),
+			)
+		);
+
+		acf_register_block_type(
+			array(
+				'name'            => 'tailwind-breed-highlight',
+				'title'           => __( 'Tailwind Breed Highlight', 'tailwind-acf' ),
+				'description'     => __( 'Showcase key breed benefits with supporting imagery.', 'tailwind-acf' ),
+				'render_template' => 'template-parts/blocks/breed-highlight.php',
+				'category'        => 'layout',
+				'icon'            => 'awards',
+				'keywords'        => array( 'breed', 'features', 'highlight', 'tailwind' ),
+				'supports'        => array(
+					'align'          => array( 'full', 'wide' ),
+					'anchor'         => true,
+					'customClassName'=> true,
+				),
+				'example'         => array(
+					'attributes' => array(
+						'mode' => 'preview',
+						'data' => array(
+							'eyebrow'  => __( 'Breed advantages', 'tailwind-acf' ),
+							'headline' => __( 'Why producers choose Murray Greys', 'tailwind-acf' ),
+							'intro'    => __( 'Balanced temperaments, fertile genetics, and adaptable carcass traits deliver premium returns.', 'tailwind-acf' ),
 						),
 					),
 				),
@@ -327,37 +352,48 @@ add_action(
 
 		acf_add_local_field_group(
 			array(
-				'key'      => 'group_tailwind_contact_form',
-				'title'    => __( 'Tailwind Contact Form', 'tailwind-acf' ),
+				'key'      => 'group_tailwind_photo_carousel',
+				'title'    => __( 'Tailwind Photo Carousel', 'tailwind-acf' ),
 				'fields'   => array(
 					array(
-						'key'       => 'field_tailwind_contact_heading',
-						'label'     => __( 'Heading', 'tailwind-acf' ),
-						'name'      => 'heading',
-						'type'      => 'text',
-						'required'  => 1,
+						'key'   => 'field_tailwind_carousel_heading',
+						'label' => __( 'Heading', 'tailwind-acf' ),
+						'name'  => 'heading',
+						'type'  => 'text',
 					),
 					array(
-						'key'       => 'field_tailwind_contact_intro',
-						'label'     => __( 'Intro Text', 'tailwind-acf' ),
-						'name'      => 'intro',
-						'type'      => 'textarea',
-						'rows'      => 3,
+						'key'   => 'field_tailwind_carousel_autoplay',
+						'label' => __( 'Enable autoplay', 'tailwind-acf' ),
+						'name'  => 'autoplay',
+						'type'  => 'true_false',
+						'ui'    => 1,
+						'default_value' => 1,
 					),
 					array(
-						'key'       => 'field_tailwind_contact_submit_label',
-						'label'     => __( 'Submit Button Label', 'tailwind-acf' ),
-						'name'      => 'submit_label',
-						'type'      => 'text',
-						'default_value' => __( 'Send message', 'tailwind-acf' ),
-					),
+						'key'          => 'field_tailwind_carousel_images',
+						'label'        => __( 'Images', 'tailwind-acf' ),
+						'name'         => 'images',
+						'type'         => 'repeater',
+						'layout'       => 'block',
+						'min'          => 3,
+						'button_label' => __( 'Add image', 'tailwind-acf' ),
+						'sub_fields'   => array(
 					array(
-						'key'       => 'field_tailwind_contact_success_message',
-						'label'     => __( 'Success Message', 'tailwind-acf' ),
-						'name'      => 'success_message',
-						'type'      => 'textarea',
-						'rows'      => 3,
-						'default_value' => __( 'Thanks for reaching out. We will respond shortly.', 'tailwind-acf' ),
+						'key'   => 'field_tailwind_carousel_image_item',
+						'label' => __( 'Image', 'tailwind-acf' ),
+						'name'  => 'image',
+						'type'  => 'image',
+								'return_format' => 'array',
+								'preview_size'  => 'medium',
+								'required'      => 1,
+							),
+							array(
+								'key'   => 'field_tailwind_carousel_caption',
+								'label' => __( 'Caption', 'tailwind-acf' ),
+								'name'  => 'caption',
+								'type'  => 'text',
+							),
+						),
 					),
 				),
 				'location' => array(
@@ -365,7 +401,83 @@ add_action(
 						array(
 							'param'    => 'block',
 							'operator' => '==',
-							'value'    => 'acf/tailwind-contact-form',
+							'value'    => 'acf/tailwind-photo-carousel',
+						),
+					),
+				),
+			)
+		);
+
+		acf_add_local_field_group(
+			array(
+				'key'      => 'group_tailwind_breed_highlight',
+				'title'    => __( 'Tailwind Breed Highlight', 'tailwind-acf' ),
+				'fields'   => array(
+					array(
+						'key'   => 'field_tailwind_breed_highlight_eyebrow',
+						'label' => __( 'Eyebrow', 'tailwind-acf' ),
+						'name'  => 'eyebrow',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_tailwind_breed_highlight_headline',
+						'label' => __( 'Headline', 'tailwind-acf' ),
+						'name'  => 'headline',
+						'type'  => 'text',
+						'required' => 1,
+					),
+					array(
+						'key'   => 'field_tailwind_breed_highlight_intro',
+						'label' => __( 'Intro', 'tailwind-acf' ),
+						'name'  => 'intro',
+						'type'  => 'textarea',
+						'rows'  => 3,
+					),
+					array(
+						'key'          => 'field_tailwind_breed_highlight_features',
+						'label'        => __( 'Feature points', 'tailwind-acf' ),
+						'name'         => 'features',
+						'type'         => 'repeater',
+						'layout'       => 'block',
+						'button_label' => __( 'Add feature', 'tailwind-acf' ),
+						'sub_fields'   => array(
+							array(
+								'key'   => 'field_tailwind_breed_highlight_feature_title',
+								'label' => __( 'Title', 'tailwind-acf' ),
+								'name'  => 'title',
+								'type'  => 'text',
+								'required' => 1,
+							),
+							array(
+								'key'   => 'field_tailwind_breed_highlight_feature_body',
+								'label' => __( 'Description', 'tailwind-acf' ),
+								'name'  => 'description',
+								'type'  => 'textarea',
+								'rows'  => 2,
+							),
+						),
+					),
+					array(
+						'key'   => 'field_tailwind_breed_highlight_image',
+						'label' => __( 'Showcase Image', 'tailwind-acf' ),
+						'name'  => 'image',
+						'type'  => 'image',
+						'return_format' => 'array',
+						'preview_size'  => 'large',
+					),
+					array(
+						'key'   => 'field_tailwind_breed_highlight_image_caption',
+						'label' => __( 'Image Caption', 'tailwind-acf' ),
+						'name'  => 'image_caption',
+						'type'  => 'text',
+					),
+				),
+				'location' => array(
+					array(
+						array(
+							'param'    => 'block',
+							'operator' => '==',
+							'value'    => 'acf/tailwind-breed-highlight',
 						),
 					),
 				),

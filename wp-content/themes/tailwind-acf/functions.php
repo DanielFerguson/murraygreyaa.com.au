@@ -50,6 +50,17 @@ function tailwind_acf_enqueue_frontend_assets() {
 		false
 	);
 
+	$carousel_js = get_template_directory() . '/assets/js/carousel.js';
+	if ( file_exists( $carousel_js ) ) {
+		wp_enqueue_script(
+			'tailwind-acf-carousel',
+			get_template_directory_uri() . '/assets/js/carousel.js',
+			array(),
+			filemtime( $carousel_js ),
+			true
+		);
+	}
+
 	$config = <<<'JS'
 tailwind.config = {
 	theme: {
@@ -84,6 +95,27 @@ function tailwind_acf_enqueue_block_editor_assets() {
 		null,
 		false
 	);
+
+	$carousel_js = get_template_directory() . '/assets/js/carousel.js';
+	if ( file_exists( $carousel_js ) ) {
+		wp_enqueue_script(
+			'tailwind-acf-carousel',
+			get_template_directory_uri() . '/assets/js/carousel.js',
+			array(),
+			filemtime( $carousel_js ),
+			true
+		);
+	}
+
+	$editor_css = get_template_directory() . '/assets/css/editor.css';
+	if ( file_exists( $editor_css ) ) {
+		wp_enqueue_style(
+			'tailwind-acf-editor-style',
+			get_template_directory_uri() . '/assets/css/editor.css',
+			array(),
+			filemtime( $editor_css )
+		);
+	}
 
 	$config = 'tailwind.config = window.tailwindConfig ?? ' . wp_json_encode(
 		array(
