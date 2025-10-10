@@ -488,6 +488,19 @@ add_action(
 	function () {
 		remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
+		remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
+		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
+
+		if ( current_user_can( 'promote_users' ) ) {
+			add_meta_box(
+				'tailwind-dashboard-pending-members',
+				__( 'Pending Member Approvals', 'tailwind-acf' ),
+				'tailwind_acf_dashboard_pending_members',
+				'dashboard',
+				'normal',
+				'high'
+			);
+		}
 	}
 );
 
@@ -515,3 +528,86 @@ add_filter(
 	10,
 	4
 );
+
+add_action(
+	'admin_menu',
+	function () {
+		if ( current_user_can( 'publish_posts' ) ) {
+			return;
+		}
+
+		remove_menu_page( 'edit.php' ); // Posts.
+		remove_menu_page( 'edit-comments.php' ); // Comments.
+		remove_menu_page( 'tools.php' ); // Tools.
+	},
+	PHP_INT_MAX
+);
+
+add_action(
+	'admin_bar_menu',
+	function ( $wp_admin_bar ) {
+		if ( ! is_admin_bar_showing() ) {
+			return;
+		}
+
+		if ( current_user_can( 'promote_users' ) ) {
+			return;
+		}
+
+		$wp_admin_bar->remove_node( 'wp-logo' );
+	},
+	PHP_INT_MAX
+);
+
+if ( ! function_exists( 'tailwind_acf_dashboard_pending_members' ) ) {
+	/**
+	 * Display a quick overview of pending member accounts on the dashboard.
+	 */
+	function tailwind_acf_dashboard_pending_members() {
+		$query = new WP_User_Query(
+			array(
+				'meta_key'   => 'tailwind_account_status',
+				'meta_value' => 'pending',
+				'fields'     => array( 'ID', 'user_login', 'user_email', 'user_registered' ),
+			)
+		);
+
+		$users = $query->get_results();
+
+		if ( empty( $users ) ) {
+			echo '<p>' . esc_html__( 'No pending members at the moment.', 'tailwind-acf' ) . '</p>';
+			return;
+		}
+
+		echo '<table class="widefat striped">';
+		echo '<thead><tr>';
+		echo '<th>' . esc_html__( 'Username', 'tailwind-acf' ) . '</th>';
+		echo '<th>' . esc_html__( 'Email', 'tailwind-acf' ) . '</th>';
+		echo '<th>' . esc_html__( 'Registered', 'tailwind-acf' ) . '</th>';
+		echo '<th class="column-links">' . esc_html__( 'Actions', 'tailwind-acf' ) . '</th>';
+		echo '</tr></thead>';
+		echo '<tbody>';
+
+		foreach ( $users as $user ) {
+			$approve_url = wp_nonce_url(
+				add_query_arg(
+					array(
+						'tailwind-approve-user' => $user->ID,
+					),
+					admin_url( 'users.php' )
+				),
+				'tailwind-approve-user_' . $user->ID
+			);
+
+			echo '<tr>';
+			echo '<td>' . esc_html( $user->user_login ) . '</td>';
+			echo '<td><a href="mailto:' . esc_attr( $user->user_email ) . '">' . esc_html( $user->user_email ) . '</a></td>';
+			echo '<td>' . esc_html( get_date_from_gmt( $user->user_registered, get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ) ) . '</td>';
+			echo '<td><a class="button button-primary" href="' . esc_url( $approve_url ) . '">' . esc_html__( 'Approve', 'tailwind-acf' ) . '</a></td>';
+			echo '</tr>';
+		}
+
+		echo '</tbody>';
+		echo '</table>';
+	}
+}
