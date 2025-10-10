@@ -53,7 +53,7 @@ $has_secondary_cta = $secondary_label && $secondary_url;
 		</div>
 	<?php endif; ?>
 
-	<div class="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-24 text-center sm:px-8 lg:px-10">
+	<div class="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-8 py-32 text-center sm:px-8 lg:px-10">
 		<?php if ($heading) : ?>
 			<h2 class="text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
 				<?php echo esc_html($heading); ?>

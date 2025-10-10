@@ -27,25 +27,8 @@ if (have_posts()) :
 ?>
 
 		<article <?php post_class('page-entry'); ?>>
-			<header class="relative isolate overflow-hidden bg-slate-900 text-white">
-				<?php if ($featured_image_id) : ?>
-					<div class="absolute inset-0">
-						<?php
-						echo wp_get_attachment_image(
-							$featured_image_id,
-							'full',
-							false,
-							array(
-								'class' => 'h-full w-full object-cover opacity-35',
-								'alt'   => esc_attr($featured_image_alt ?: get_the_title()),
-							)
-						);
-						?>
-						<div class="absolute inset-0 bg-slate-900/80 mix-blend-multiply"></div>
-					</div>
-				<?php endif; ?>
-
-				<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:py-24 lg:px-12">
+			<header class="relative isolate overflow-hidden bg-green-950 text-white">
+				<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:pt-8 sm:py-16 lg:px-12">
 					<h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
 						<?php the_title(); ?>
 					</h1>
@@ -58,7 +41,7 @@ if (have_posts()) :
 				</div>
 			</header>
 
-			<div class="bg-slate-50">
+			<div>
 				<div class="mx-auto max-w-5xl px-6 py-16 sm:px-10 lg:px-12">
 					<div class="prose prose-slate max-w-none">
 						<?php

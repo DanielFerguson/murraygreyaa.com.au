@@ -132,7 +132,7 @@ if (has_nav_menu('social') && ! empty($menu_locations['social'])) {
 }
 ?>
 
-<footer class="bg-white">
+<footer class="bg-slate-50">
 	<div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
 		<div class="xl:grid xl:grid-cols-3 xl:gap-8">
 			<div class="space-y-8">
@@ -158,10 +158,10 @@ if (has_nav_menu('social') && ! empty($menu_locations['social'])) {
 						</a>
 					<?php endif; ?>
 				<?php else : ?>
-					<?php if (has_custom_logo()) : ?>
-						<div class="flex items-center">
-							<?php the_custom_logo(); ?>
-						</div>
+					<?php if (has_site_icon()) : ?>
+						<a class="inline-flex items-center" href="<?php echo esc_url(home_url('/')); ?>">
+							<img class="h-32 w-auto" src="<?php echo esc_url(get_site_icon_url(512)); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
+						</a>
 					<?php else : ?>
 						<span class="text-2xl font-semibold text-slate-900">About MGAA</span>
 					<?php endif; ?>

@@ -16,31 +16,23 @@
 	<?php wp_head(); ?>
 </head>
 <?php
-$body_classes   = get_body_class(
+$body_classes = get_body_class(
 	array(
-		'bg-slate-50',
 		'text-slate-900',
 		'antialiased',
 	)
 );
-$has_hero_first = in_array('has-hero-first', $body_classes, true);
 
-$header_classes = $has_hero_first
-	? 'site-header absolute inset-x-0 top-0 z-50 bg-transparent pt-10'
-	: 'site-header border-b border-slate-200/60 bg-white/80 backdrop-blur';
+$header_classes = 'site-header inset-x-0 top-0 z-50 bg-green-950';
 
-$inner_classes  = 'mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6 sm:px-8 lg:px-12';
-$inner_classes .= $has_hero_first ? ' text-white' : ' text-slate-600';
+$inner_classes  = 'mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-2 sm:px-8 lg:px-12';
+$inner_classes .= ' text-white';
 
-$brand_classes = $has_hero_first
-	? 'text-xl font-semibold text-white transition hover:text-white/80'
-	: 'text-xl font-semibold text-slate-900 transition hover:text-brand';
+$brand_classes = 'text-xl font-semibold text-white transition hover:text-white/80';
 
-$nav_classes = $has_hero_first
-	? 'hidden sm:block font-medium text-white'
-	: 'hidden sm:block font-medium text-slate-600';
+$nav_classes = 'hidden sm:block font-medium text-white';
 
-$main_classes = $has_hero_first ? 'pt-0' : 'pt-24';
+$main_classes = 'pt-0';
 ?>
 
 <body class="<?php echo esc_attr(implode(' ', $body_classes)); ?>">
@@ -50,11 +42,7 @@ $main_classes = $has_hero_first ? 'pt-0' : 'pt-24';
 	<header class="<?php echo esc_attr($header_classes); ?>">
 		<div class="<?php echo esc_attr($inner_classes); ?>">
 			<div class="flex items-center gap-3">
-				<?php if (has_custom_logo()) : ?>
-					<div class="inline-flex items-center">
-						<?php the_custom_logo(); ?>
-					</div>
-				<?php elseif (has_site_icon()) : ?>
+				<?php if (has_site_icon()) : ?>
 					<a class="inline-flex items-center" href="<?php echo esc_url(home_url('/')); ?>">
 						<img class="h-12 w-auto" src="<?php echo esc_url(get_site_icon_url(192)); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
 					</a>

@@ -40,7 +40,7 @@ if (! empty($block['anchor'])) {
 	$block_id = $block['anchor'];
 }
 
-$class_name = 'tailwind-photo-carousel bg-slate-50';
+$class_name = 'tailwind-photo-carousel';
 if (! empty($block['className'])) {
 	$class_name .= ' ' . $block['className'];
 }

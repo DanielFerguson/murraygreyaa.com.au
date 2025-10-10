@@ -41,8 +41,8 @@ $image_alt = $image_id ? ($image['alt'] ?? get_the_title($image_id)) : '';
 <section id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($class_name); ?>">
 	<div class="overflow-hidden py-24 sm:py-32">
 		<div class="mx-auto max-w-7xl md:px-6 lg:px-8">
-			<div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-start">
-				<div class="px-6 md:px-0 lg:pr-8 lg:pt-4">
+			<div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-center">
+				<div class="px-6 md:px-0 lg:pr-8">
 					<div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
 						<?php if ($eyebrow) : ?>
 							<p class="text-xs font-semibold tracking-[0.3em] uppercase text-brand">
@@ -90,42 +90,28 @@ $image_alt = $image_id ? ($image['alt'] ?? get_the_title($image_id)) : '';
 				</div>
 
 				<div class="sm:px-6 lg:px-0">
-					<div class="relative isolate overflow-hidden rounded-xl px-6 pb-14 pt-10 shadow-xl sm:mx-auto sm:max-w-2xl sm:p-6 lg:mx-0 lg:max-w-none">
-						<div aria-hidden="true" class="absolute -inset-y-px -left-6 -z-10 w-full origin-bottom-left skew-x-[-30deg] bg-brand-light/20 ring-1 ring-inset ring-white/20"></div>
-
-						<div class="mx-auto max-w-2xl sm:mx-0 sm:max-w-none">
-							<div class="overflow-hidden rounded bg-white/5 ring-1 ring-white/10">
-								<?php if ($image_id) : ?>
-									<div class="bg-black/20">
-										<?php
-										echo wp_get_attachment_image(
-											$image_id,
-											'large',
-											false,
-											array(
-												'class' => 'w-full object-cover sm:h-96',
-												'alt'   => esc_attr($image_alt),
-											)
-										);
-										?>
-									</div>
-								<?php else : ?>
-									<div class="flex h-72 items-center justify-center bg-gradient-to-br from-white/10 to-white/5 text-white">
-										<span class="text-sm font-semibold uppercase tracking-[0.3em] text-white/70">
-											<?php esc_html_e('Upload breed photography', 'tailwind-acf'); ?>
-										</span>
-									</div>
-								<?php endif; ?>
-							</div>
+					<div class="mx-auto max-w-2xl sm:mx-0 sm:max-w-none">
+						<div class="overflow-hidden rounded bg-white/5 ring-1 ring-white/10">
+							<?php if ($image_id) : ?>
+								<?php
+								echo wp_get_attachment_image(
+									$image_id,
+									'large',
+									false,
+									array(
+										'class' => 'w-full object-cover sm:h-96 rounded-lg',
+										'alt'   => esc_attr($image_alt),
+									)
+								);
+								?>
+							<?php else : ?>
+								<div class="flex h-72 items-center justify-center bg-gradient-to-br from-white/10 to-white/5 text-white">
+									<span class="text-sm font-semibold uppercase tracking-[0.3em] text-white/70">
+										<?php esc_html_e('Upload breed photography', 'tailwind-acf'); ?>
+									</span>
+								</div>
+							<?php endif; ?>
 						</div>
-
-						<?php if ($caption) : ?>
-							<p class="mt-6 text-sm font-semibold text-white/80">
-								<?php echo esc_html($caption); ?>
-							</p>
-						<?php endif; ?>
-
-						<div aria-hidden="true" class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 sm:rounded-3xl"></div>
 					</div>
 				</div>
 			</div>

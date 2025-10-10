@@ -51,7 +51,7 @@ $posts = get_posts(array(
 		<?php if (! empty($posts)) : ?>
 			<div class="mt-10 grid gap-6 md:grid-cols-3">
 				<?php foreach ($posts as $post) : ?>
-					<article class="group flex h-full flex-col rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-sm shadow-slate-200/60 transition hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg hover:shadow-brand/20">
+					<article class="group flex h-full flex-col rounded-xl border border-slate-200/70 p-6 shadow-sm shadow-slate-200/60 bg-slate-50 transition hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg hover:shadow-brand/20">
 						<?php if (has_post_thumbnail($post)) : ?>
 							<a class="relative mb-5 block overflow-hidden rounded-2xl" href="<?php echo esc_url(get_permalink($post)); ?>">
 								<?php echo get_the_post_thumbnail($post, 'large', array('class' => 'aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.02]')); ?>

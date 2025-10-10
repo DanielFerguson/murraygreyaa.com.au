@@ -60,8 +60,8 @@ if ($page_id && has_excerpt($page_id)) {
 }
 ?>
 
-<section class="relative isolate overflow-hidden bg-slate-900 text-white">
-	<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:py-24 lg:px-12">
+<section class="relative isolate overflow-hidden bg-green-950 text-white">
+	<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:pt-8 sm:py-16 lg:px-12">
 		<h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl"><?php echo esc_html($page_title); ?></h1>
 
 		<?php if ($page_excerpt) : ?>
@@ -70,7 +70,7 @@ if ($page_id && has_excerpt($page_id)) {
 	</div>
 </section>
 
-<div class="bg-slate-50">
+<div>
 	<div class="mx-auto max-w-5xl px-6 py-16 sm:px-10 lg:px-12">
 		<?php if ($featured_post) : ?>
 			<section class="mb-16 rounded-3xl bg-white p-8 shadow-lg shadow-slate-200/60 sm:p-12">
