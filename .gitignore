@@ -46,6 +46,3 @@ wp-config.php
 #/wp-content/themes
 
 # End of https://www.toptal.com/developers/gitignore/api/wordpress
-
-### Development ###
-tasks/
