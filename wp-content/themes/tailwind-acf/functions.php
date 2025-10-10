@@ -26,6 +26,7 @@ add_action( 'after_setup_theme', function () {
 		array(
 			'primary' => __( 'Primary Menu', 'tailwind-acf' ),
 			'footer'  => __( 'Footer Menu', 'tailwind-acf' ),
+			'social'  => __( 'Social Links', 'tailwind-acf' ),
 		)
 	);
 } );
