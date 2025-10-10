@@ -477,17 +477,9 @@ add_filter(
 			return $redirect_to;
 		}
 
-		if ( empty( $requested_redirect_to ) || false !== strpos( $requested_redirect_to, 'profile.php' ) ) {
-			return admin_url();
-		}
-
-		if ( empty( $redirect_to ) || false !== strpos( $redirect_to, 'profile.php' ) ) {
-			return admin_url();
-		}
-
-		return $redirect_to;
+		return admin_url( 'index.php' );
 	},
-	999,
+	PHP_INT_MAX,
 	3
 );
 
