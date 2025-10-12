@@ -41,10 +41,10 @@ if (is_array($background_image) && ! empty($background_image['url'])) {
 }
 ?>
 <section id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($class_name); ?> bg-green-950">
-	<div class="absolute inset-0">
+	<div class="absolute inset-0 overflow-hidden">
 		<?php if ($bg_url) : ?>
-			<img class="h-full w-full object-cover" src="<?php echo $bg_url; ?>" alt="">
-			<div class="absolute inset-0 bg-slate-900/70 mix-blend-multiply"></div>
+			<img class="h-full w-full object-cover" data-parallax-speed="0.15" data-parallax-max="36" src="<?php echo $bg_url; ?>" alt="" role="presentation" decoding="async">
+			<div class="absolute inset-0 bg-slate-900/70 mix-blend-multiply" aria-hidden="true"></div>
 		<?php else : ?>
 			<div class="absolute inset-0 bg-gradient-to-br from-brand/80 via-slate-900 to-slate-950"></div>
 		<?php endif; ?>

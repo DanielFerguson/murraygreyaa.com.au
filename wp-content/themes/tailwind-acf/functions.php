@@ -63,6 +63,17 @@ function tailwind_acf_enqueue_frontend_assets()
 		);
 	}
 
+	$hero_parallax_js = get_template_directory() . '/assets/js/hero-parallax.js';
+	if (file_exists($hero_parallax_js)) {
+		wp_enqueue_script(
+			'tailwind-acf-hero-parallax',
+			get_template_directory_uri() . '/assets/js/hero-parallax.js',
+			array(),
+			filemtime($hero_parallax_js),
+			true
+		);
+	}
+
 	$config = <<<'JS'
 tailwind.config = {
 	theme: {
@@ -110,6 +121,17 @@ function tailwind_acf_enqueue_block_editor_assets()
 		);
 	}
 
+	$hero_parallax_js = get_template_directory() . '/assets/js/hero-parallax.js';
+	if (file_exists($hero_parallax_js)) {
+		wp_enqueue_script(
+			'tailwind-acf-hero-parallax',
+			get_template_directory_uri() . '/assets/js/hero-parallax.js',
+			array(),
+			filemtime($hero_parallax_js),
+			true
+		);
+	}
+
 	$editor_css = get_template_directory() . '/assets/css/editor.css';
 	if (file_exists($editor_css)) {
 		wp_enqueue_style(
@@ -146,6 +168,11 @@ add_action('enqueue_block_editor_assets', 'tailwind_acf_enqueue_block_editor_ass
 $block_loader = __DIR__ . '/inc/acf-blocks.php';
 if (file_exists($block_loader)) {
 	require_once $block_loader;
+}
+
+$member_module = __DIR__ . '/inc/members.php';
+if (file_exists($member_module)) {
+	require_once $member_module;
 }
 
 add_action(
