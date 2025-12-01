@@ -224,6 +224,11 @@ if (file_exists($cattle_module)) {
 	require_once $cattle_module;
 }
 
+$turnstile_module = __DIR__ . '/inc/turnstile.php';
+if (file_exists($turnstile_module)) {
+	require_once $turnstile_module;
+}
+
 add_action(
 	'customize_register',
 	function ($wp_customize) {
