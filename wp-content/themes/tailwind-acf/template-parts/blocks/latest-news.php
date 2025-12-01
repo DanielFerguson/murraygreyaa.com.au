@@ -35,7 +35,7 @@ $posts = get_posts(array(
 ));
 
 ?>
-<section id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($class_name); ?>">
+<section id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($class_name); ?> bg-white">
 	<div class="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-12">
 		<div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
 			<div class="max-w-2xl">

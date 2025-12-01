@@ -28,7 +28,7 @@ if (have_posts()) :
 
 		<article <?php post_class('page-entry'); ?>>
 			<header class="relative isolate overflow-hidden bg-green-950 text-white">
-				<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:pt-8 sm:py-16 lg:px-12">
+				<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 lg:px-12">
 					<h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
 						<?php the_title(); ?>
 					</h1>

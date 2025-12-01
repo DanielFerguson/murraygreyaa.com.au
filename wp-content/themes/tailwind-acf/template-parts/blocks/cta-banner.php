@@ -23,7 +23,7 @@ if (! empty($block['anchor'])) {
 	$block_id = $block['anchor'];
 }
 
-$class_name = 'tailwind-cta-banner relative overflow-hidden bg-green-950 text-white mt-16';
+$class_name = 'tailwind-cta-banner relative overflow-hidden bg-green-950 text-white';
 if (! empty($block['className'])) {
 	$class_name .= ' ' . $block['className'];
 }

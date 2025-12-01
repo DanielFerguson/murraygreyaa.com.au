@@ -77,9 +77,9 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 			<div class="mx-auto max-w-5xl px-6 py-16 sm:px-10 lg:px-12">
 				<header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 					<div>
-						<h1 class="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-							<?php the_title(); ?>
-						</h1>
+					<h1 class="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+						<?php the_title(); ?>
+					</h1>
 						<p class="mt-1 text-base text-slate-600">
 							<?php
 							printf(
@@ -130,8 +130,8 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 					if (trim($content)) :
 					?>
 						<div class="prose prose-slate max-w-none mb-12">
-							<?php the_content(); ?>
-						</div>
+						<?php the_content(); ?>
+					</div>
 					<?php endif; ?>
 
 					<?php
@@ -344,7 +344,7 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 						</h3>
 						<p class="mt-2 text-sm text-slate-600 max-w-md mx-auto">
 							<?php esc_html_e('Your account is being reviewed by an administrator. You will be able to access the dashboard and register cattle once your account is approved.', 'tailwind-acf'); ?>
-						</p>
+					</p>
 					</div>
 				<?php endif; ?>
 			</div>

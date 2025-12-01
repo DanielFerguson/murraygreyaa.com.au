@@ -55,6 +55,16 @@ function tailwind_register_cattle_registration_cpt() {
 add_action( 'init', 'tailwind_register_cattle_registration_cpt' );
 
 /**
+ * Flush rewrite rules on theme activation to ensure CPT permalinks work.
+ */
+function tailwind_flush_rewrite_rules_on_activation() {
+	// Register CPT first so rules are included.
+	tailwind_register_cattle_registration_cpt();
+	flush_rewrite_rules();
+}
+add_action( 'after_switch_theme', 'tailwind_flush_rewrite_rules_on_activation' );
+
+/**
  * Create the cattle registration page if it doesn't exist.
  */
 function tailwind_create_cattle_registration_page() {
@@ -86,6 +96,37 @@ function tailwind_create_cattle_registration_page() {
 	}
 }
 add_action( 'init', 'tailwind_create_cattle_registration_page', 20 );
+
+/**
+ * Create the animal search page if it doesn't exist.
+ */
+function tailwind_create_animal_search_page() {
+	if ( get_page_by_path( 'animal-search' ) ) {
+		return;
+	}
+
+	if ( get_option( 'tailwind_animal_search_page_created' ) ) {
+		return;
+	}
+
+	$page_id = wp_insert_post(
+		array(
+			'post_title'     => __( 'Animal Search', 'tailwind-acf' ),
+			'post_name'      => 'animal-search',
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'post_content'   => '',
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+			'page_template'  => 'page-animal-search.php',
+		)
+	);
+
+	if ( $page_id && ! is_wp_error( $page_id ) ) {
+		update_option( 'tailwind_animal_search_page_created', $page_id, false );
+	}
+}
+add_action( 'init', 'tailwind_create_animal_search_page', 20 );
 
 /**
  * Register ACF field group for cattle registrations.

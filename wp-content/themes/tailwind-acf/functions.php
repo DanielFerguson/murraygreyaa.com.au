@@ -33,6 +33,50 @@ add_action('after_setup_theme', function () {
 });
 
 /**
+ * Set default page template to 'Content Page' for new pages.
+ *
+ * @param string $template The default template.
+ * @return string The modified default template.
+ */
+function tailwind_acf_default_page_template($template)
+{
+	return 'template-content-page.php';
+}
+add_filter('default_page_template_title', function () {
+	return __('Content Page', 'tailwind-acf');
+});
+
+/**
+ * Set the default template meta when a new page is created.
+ *
+ * @param int     $post_id Post ID.
+ * @param WP_Post $post    Post object.
+ * @param bool    $update  Whether this is an update.
+ */
+function tailwind_acf_set_default_page_template($post_id, $post, $update)
+{
+	// Only for new pages, not updates.
+	if ($update) {
+		return;
+	}
+
+	// Only for pages.
+	if ('page' !== $post->post_type) {
+		return;
+	}
+
+	// Check if template is already set.
+	$current_template = get_post_meta($post_id, '_wp_page_template', true);
+	if (! empty($current_template) && 'default' !== $current_template) {
+		return;
+	}
+
+	// Set the default template.
+	update_post_meta($post_id, '_wp_page_template', 'template-content-page.php');
+}
+add_action('wp_insert_post', 'tailwind_acf_set_default_page_template', 10, 3);
+
+/**
  * Enqueue Tailwind CDN for the front end.
  */
 function tailwind_acf_enqueue_frontend_assets()
@@ -562,34 +606,36 @@ if (! function_exists('tailwind_acf_dashboard_pending_cattle')) {
 /**
  * Remove unwanted dashboard widgets.
  */
-function tailwind_remove_dashboard_widgets() {
+function tailwind_remove_dashboard_widgets()
+{
 	// Wordfence widgets.
-	remove_meta_box( 'wordfence_activity_report_widget', 'dashboard', 'normal' );
-	remove_meta_box( 'wf_dashboard_widget', 'dashboard', 'normal' );
+	remove_meta_box('wordfence_activity_report_widget', 'dashboard', 'normal');
+	remove_meta_box('wf_dashboard_widget', 'dashboard', 'normal');
 
 	// Yoast SEO widgets.
-	remove_meta_box( 'wpseo-dashboard-overview', 'dashboard', 'normal' );
-	remove_meta_box( 'wpseo-wincher-dashboard-overview', 'dashboard', 'normal' );
+	remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal');
+	remove_meta_box('wpseo-wincher-dashboard-overview', 'dashboard', 'normal');
 
 	// WPForms widget.
-	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
-	remove_meta_box( 'wpforms_reports_widget_pro', 'dashboard', 'normal' );
+	remove_meta_box('wpforms_reports_widget_lite', 'dashboard', 'normal');
+	remove_meta_box('wpforms_reports_widget_pro', 'dashboard', 'normal');
 
 	// Site Health Status widget.
-	remove_meta_box( 'dashboard_site_health', 'dashboard', 'normal' );
+	remove_meta_box('dashboard_site_health', 'dashboard', 'normal');
 
 	// Welcome panel.
-	remove_action( 'welcome_panel', 'wp_welcome_panel' );
+	remove_action('welcome_panel', 'wp_welcome_panel');
 }
-add_action( 'wp_dashboard_setup', 'tailwind_remove_dashboard_widgets', 999 );
+add_action('wp_dashboard_setup', 'tailwind_remove_dashboard_widgets', 999);
 
 /**
  * Disable the welcome panel for all users.
  */
-function tailwind_disable_welcome_panel() {
+function tailwind_disable_welcome_panel()
+{
 	$user_id = get_current_user_id();
-	if ( get_user_meta( $user_id, 'show_welcome_panel', true ) ) {
-		update_user_meta( $user_id, 'show_welcome_panel', 0 );
+	if (get_user_meta($user_id, 'show_welcome_panel', true)) {
+		update_user_meta($user_id, 'show_welcome_panel', 0);
 	}
 }
-add_action( 'admin_init', 'tailwind_disable_welcome_panel' );
+add_action('admin_init', 'tailwind_disable_welcome_panel');

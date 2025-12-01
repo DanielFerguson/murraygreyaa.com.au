@@ -51,7 +51,7 @@ if (! empty($block['align'])) {
 ?>
 <section
 	id="<?php echo esc_attr($block_id); ?>"
-	class="<?php echo esc_attr($class_name); ?>"
+	class="<?php echo esc_attr($class_name); ?> bg-slate-50"
 	data-carousel-root
 	data-carousel-autoplay="<?php echo $autoplay ? 'true' : 'false'; ?>"
 	data-carousel-interval="3000">
