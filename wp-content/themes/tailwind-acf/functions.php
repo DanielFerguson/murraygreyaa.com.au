@@ -175,6 +175,11 @@ if (file_exists($member_module)) {
 	require_once $member_module;
 }
 
+$cattle_module = __DIR__ . '/inc/cattle-registration.php';
+if (file_exists($cattle_module)) {
+	require_once $cattle_module;
+}
+
 add_action(
 	'customize_register',
 	function ($wp_customize) {
@@ -368,6 +373,15 @@ add_action(
 				'normal',
 				'high'
 			);
+
+			add_meta_box(
+				'tailwind-dashboard-pending-cattle',
+				__('Pending Cattle Registrations', 'tailwind-acf'),
+				'tailwind_acf_dashboard_pending_cattle',
+				'dashboard',
+				'normal',
+				'high'
+			);
 		}
 	}
 );
@@ -481,3 +495,101 @@ if (! function_exists('tailwind_acf_dashboard_pending_members')) {
 		echo '</table>';
 	}
 }
+
+if (! function_exists('tailwind_acf_dashboard_pending_cattle')) {
+	/**
+	 * Display a quick overview of pending cattle registrations on the dashboard.
+	 */
+	function tailwind_acf_dashboard_pending_cattle()
+	{
+		$pending_cattle = get_posts(
+			array(
+				'post_type'      => 'cattle_registration',
+				'post_status'    => 'pending',
+				'posts_per_page' => -1,
+				'orderby'        => 'date',
+				'order'          => 'ASC',
+			)
+		);
+
+		if (empty($pending_cattle)) {
+			echo '<p>' . esc_html__('No pending cattle registrations at the moment.', 'tailwind-acf') . '</p>';
+			return;
+		}
+
+		echo '<table class="widefat striped">';
+		echo '<thead><tr>';
+		echo '<th>' . esc_html__('Calf Name', 'tailwind-acf') . '</th>';
+		echo '<th>' . esc_html__('Tattoo', 'tailwind-acf') . '</th>';
+		echo '<th>' . esc_html__('Submitter', 'tailwind-acf') . '</th>';
+		echo '<th>' . esc_html__('Submitted', 'tailwind-acf') . '</th>';
+		echo '<th class="column-links">' . esc_html__('Actions', 'tailwind-acf') . '</th>';
+		echo '</tr></thead>';
+		echo '<tbody>';
+
+		foreach ($pending_cattle as $cattle) {
+			$calf_name = get_field('calf_name', $cattle->ID);
+			$tattoo    = get_field('tattoo_number', $cattle->ID);
+			$author    = get_userdata($cattle->post_author);
+
+			$approve_url = wp_nonce_url(
+				add_query_arg(
+					array(
+						'action'  => 'tailwind_approve_cattle',
+						'post_id' => $cattle->ID,
+					),
+					admin_url('admin-post.php')
+				),
+				'tailwind_approve_cattle_' . $cattle->ID
+			);
+
+			$edit_url = admin_url('post.php?post=' . $cattle->ID . '&action=edit');
+
+			echo '<tr>';
+			echo '<td><a href="' . esc_url($edit_url) . '">' . esc_html($calf_name ?: '—') . '</a></td>';
+			echo '<td>' . esc_html($tattoo ?: '—') . '</td>';
+			echo '<td>' . ($author ? esc_html($author->display_name) : '—') . '</td>';
+			echo '<td>' . esc_html(get_the_date('', $cattle)) . '</td>';
+			echo '<td><a class="button button-primary" href="' . esc_url($approve_url) . '">' . esc_html__('Approve', 'tailwind-acf') . '</a></td>';
+			echo '</tr>';
+		}
+
+		echo '</tbody>';
+		echo '</table>';
+	}
+}
+
+/**
+ * Remove unwanted dashboard widgets.
+ */
+function tailwind_remove_dashboard_widgets() {
+	// Wordfence widgets.
+	remove_meta_box( 'wordfence_activity_report_widget', 'dashboard', 'normal' );
+	remove_meta_box( 'wf_dashboard_widget', 'dashboard', 'normal' );
+
+	// Yoast SEO widgets.
+	remove_meta_box( 'wpseo-dashboard-overview', 'dashboard', 'normal' );
+	remove_meta_box( 'wpseo-wincher-dashboard-overview', 'dashboard', 'normal' );
+
+	// WPForms widget.
+	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
+	remove_meta_box( 'wpforms_reports_widget_pro', 'dashboard', 'normal' );
+
+	// Site Health Status widget.
+	remove_meta_box( 'dashboard_site_health', 'dashboard', 'normal' );
+
+	// Welcome panel.
+	remove_action( 'welcome_panel', 'wp_welcome_panel' );
+}
+add_action( 'wp_dashboard_setup', 'tailwind_remove_dashboard_widgets', 999 );
+
+/**
+ * Disable the welcome panel for all users.
+ */
+function tailwind_disable_welcome_panel() {
+	$user_id = get_current_user_id();
+	if ( get_user_meta( $user_id, 'show_welcome_panel', true ) ) {
+		update_user_meta( $user_id, 'show_welcome_panel', 0 );
+	}
+}
+add_action( 'admin_init', 'tailwind_disable_welcome_panel' );

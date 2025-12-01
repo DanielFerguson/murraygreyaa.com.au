@@ -219,10 +219,11 @@ function tailwind_member_force_dashboard_after_login($user_login, $user)
 add_action('wp_login', 'tailwind_member_force_dashboard_after_login', 20, 2);
 
 /**
- * Prevent non-editors from landing on the wp-admin dashboard after login.
+ * Redirect non-admin users from wp-admin to the front-end dashboard.
  */
 function tailwind_member_redirect_admin_dashboard()
 {
+	// Don't interfere with AJAX or cron requests.
 	if (wp_doing_ajax() || (defined('DOING_CRON') && DOING_CRON)) {
 		return;
 	}
@@ -231,19 +232,14 @@ function tailwind_member_redirect_admin_dashboard()
 		return;
 	}
 
-	if (current_user_can('edit_posts')) {
+	// Allow administrators to access wp-admin.
+	if (current_user_can('manage_options')) {
 		return;
 	}
 
-	$status = tailwind_member_get_status(get_current_user_id());
-
-	if (TAILWIND_MEMBER_STATUS_APPROVED !== $status) {
-		return;
-	}
-
+	// Allow access to profile.php so users can update their profile/password.
 	global $pagenow;
-
-	if ('index.php' !== $pagenow) {
+	if ('profile.php' === $pagenow) {
 		return;
 	}
 
