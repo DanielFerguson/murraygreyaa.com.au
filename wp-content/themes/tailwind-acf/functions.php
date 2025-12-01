@@ -327,201 +327,42 @@ add_filter(
 add_filter(
 	'login_headertext',
 	function () {
-		return get_bloginfo( 'name' );
+		return get_bloginfo('name');
 	}
 );
 
 add_action(
 	'init',
 	function () {
-		if ( ! get_role( 'tailwind_pending' ) ) {
-			add_role( 'tailwind_pending', __( 'Pending Approval', 'tailwind-acf' ), array() );
+		if (! get_role('tailwind_pending')) {
+			add_role('tailwind_pending', __('Pending Approval', 'tailwind-acf'), array());
 		}
 	}
-);
-
-add_action(
-	'user_register',
-	function ( $user_id ) {
-		$user = new WP_User( $user_id );
-
-		$user->set_role( 'tailwind_pending' );
-		update_user_meta( $user_id, 'tailwind_account_status', 'pending' );
-
-		wp_mail(
-			get_option( 'admin_email' ),
-			__( 'New account awaiting approval', 'tailwind-acf' ),
-			sprintf(
-				/* translators: 1: user login, 2: user email address */
-				__( "A new user registered and is awaiting approval:\n\nUsername: %1\$s\nEmail: %2\$s\n\nApprove via Users → All Users.\n", 'tailwind-acf' ),
-				$user->user_login,
-				$user->user_email
-			)
-		);
-	}
-);
-
-add_filter(
-	'authenticate',
-	function ( $user, $username ) {
-		if ( $user instanceof WP_User && 'pending' === get_user_meta( $user->ID, 'tailwind_account_status', true ) ) {
-			return new WP_Error(
-				'tailwind_pending',
-				__( 'Thanks! An administrator will approve your account soon.', 'tailwind-acf' )
-			);
-		}
-
-		return $user;
-	},
-	20,
-	2
 );
 
 add_action(
 	'set_user_role',
-	function ( $user_id, $role ) {
-		if ( 'tailwind_pending' !== $role ) {
-			delete_user_meta( $user_id, 'tailwind_account_status' );
+	function ($user_id, $role) {
+		if ('tailwind_pending' !== $role) {
+			delete_user_meta($user_id, TAILWIND_MEMBER_STATUS_META);
 		}
 	},
 	10,
 	2
-);
-
-add_filter(
-	'user_row_actions',
-	function ( $actions, $user ) {
-		if ( ! current_user_can( 'promote_users' ) ) {
-			return $actions;
-		}
-
-		if ( 'pending' !== get_user_meta( $user->ID, 'tailwind_account_status', true ) ) {
-			return $actions;
-		}
-
-		$approve_url = wp_nonce_url(
-			add_query_arg(
-				array(
-					'tailwind-approve-user' => $user->ID,
-				),
-				admin_url( 'users.php' )
-			),
-			'tailwind-approve-user_' . $user->ID
-		);
-
-		$actions['tailwind-approve'] = sprintf(
-			'<a href="%1$s">%2$s</a>',
-			esc_url( $approve_url ),
-			esc_html__( 'Approve', 'tailwind-acf' )
-		);
-
-		return $actions;
-	},
-	10,
-	2
-);
-
-add_action(
-	'admin_init',
-	function () {
-		if ( ! current_user_can( 'promote_users' ) ) {
-			return;
-		}
-
-		$user_param = filter_input( INPUT_GET, 'tailwind-approve-user', FILTER_SANITIZE_NUMBER_INT );
-		if ( empty( $user_param ) ) {
-			return;
-		}
-
-		$user_id = absint( $user_param );
-		check_admin_referer( 'tailwind-approve-user_' . $user_id );
-
-		$user = get_user_by( 'id', $user_id );
-		if ( ! $user ) {
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						'tailwind-approved' => '0',
-					),
-					admin_url( 'users.php' )
-				)
-			);
-			exit;
-		}
-
-		$default_role = get_option( 'default_role', 'subscriber' );
-		wp_update_user(
-			array(
-				'ID'   => $user_id,
-				'role' => $default_role,
-			)
-		);
-
-		delete_user_meta( $user_id, 'tailwind_account_status' );
-
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'tailwind-approved' => '1',
-				),
-				admin_url( 'users.php' )
-			)
-		);
-		exit;
-	}
-);
-
-add_action(
-	'admin_notices',
-	function () {
-		$status = filter_input( INPUT_GET, 'tailwind-approved', FILTER_SANITIZE_SPECIAL_CHARS );
-		if ( null === $status ) {
-			return;
-		}
-
-		if ( '1' === $status ) {
-			printf(
-				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				esc_html__( 'User approved and activated.', 'tailwind-acf' )
-			);
-		} else {
-			printf(
-				'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
-				esc_html__( 'User could not be approved. Please try again.', 'tailwind-acf' )
-			);
-		}
-	}
-);
-
-add_filter(
-	'login_redirect',
-	function ( $redirect_to, $requested_redirect_to, $user ) {
-		if ( ! $user instanceof WP_User ) {
-			return $redirect_to;
-		}
-
-		if ( in_array( 'tailwind_pending', (array) $user->roles, true ) ) {
-			return $redirect_to;
-		}
-
-		return admin_url( 'index.php' );
-	},
-	PHP_INT_MAX,
-	3
 );
 
 add_action(
 	'wp_dashboard_setup',
 	function () {
-		remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
-		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
-		remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
-		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
+		remove_meta_box('dashboard_activity', 'dashboard', 'normal');
+		remove_meta_box('dashboard_primary', 'dashboard', 'side');
+		remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+		remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
 
-		if ( current_user_can( 'promote_users' ) ) {
+		if (current_user_can('promote_users')) {
 			add_meta_box(
 				'tailwind-dashboard-pending-members',
-				__( 'Pending Member Approvals', 'tailwind-acf' ),
+				__('Pending Member Approvals', 'tailwind-acf'),
 				'tailwind_acf_dashboard_pending_members',
 				'dashboard',
 				'normal',
@@ -533,20 +374,20 @@ add_action(
 
 add_filter(
 	'user_has_cap',
-	function ( $allcaps, $caps, $args, $user ) {
-		if ( empty( $args[0] ) || 'edit_posts' !== $args[0] ) {
+	function ($allcaps, $caps, $args, $user) {
+		if (empty($args[0]) || 'edit_posts' !== $args[0]) {
 			return $allcaps;
 		}
 
-		if ( empty( $GLOBALS['pagenow'] ) || 'index.php' !== $GLOBALS['pagenow'] ) {
+		if (empty($GLOBALS['pagenow']) || 'index.php' !== $GLOBALS['pagenow']) {
 			return $allcaps;
 		}
 
-		if ( in_array( 'tailwind_pending', (array) $user->roles, true ) ) {
+		if (in_array('tailwind_pending', (array) $user->roles, true)) {
 			return $allcaps;
 		}
 
-		if ( array_intersect( (array) $user->roles, array( 'subscriber' ) ) ) {
+		if (array_intersect((array) $user->roles, array('subscriber'))) {
 			$allcaps['edit_posts'] = true;
 		}
 
@@ -559,78 +400,80 @@ add_filter(
 add_action(
 	'admin_menu',
 	function () {
-		if ( current_user_can( 'publish_posts' ) ) {
+		if (current_user_can('publish_posts')) {
 			return;
 		}
 
-		remove_menu_page( 'edit.php' ); // Posts.
-		remove_menu_page( 'edit-comments.php' ); // Comments.
-		remove_menu_page( 'tools.php' ); // Tools.
+		remove_menu_page('edit.php'); // Posts.
+		remove_menu_page('edit-comments.php'); // Comments.
+		remove_menu_page('tools.php'); // Tools.
 	},
 	PHP_INT_MAX
 );
 
 add_action(
 	'admin_bar_menu',
-	function ( $wp_admin_bar ) {
-		if ( ! is_admin_bar_showing() ) {
+	function ($wp_admin_bar) {
+		if (! is_admin_bar_showing()) {
 			return;
 		}
 
-		if ( current_user_can( 'promote_users' ) ) {
+		if (current_user_can('promote_users')) {
 			return;
 		}
 
-		$wp_admin_bar->remove_node( 'wp-logo' );
+		$wp_admin_bar->remove_node('wp-logo');
 	},
 	PHP_INT_MAX
 );
 
-if ( ! function_exists( 'tailwind_acf_dashboard_pending_members' ) ) {
+if (! function_exists('tailwind_acf_dashboard_pending_members')) {
 	/**
 	 * Display a quick overview of pending member accounts on the dashboard.
 	 */
-	function tailwind_acf_dashboard_pending_members() {
+	function tailwind_acf_dashboard_pending_members()
+	{
 		$query = new WP_User_Query(
 			array(
-				'meta_key'   => 'tailwind_account_status',
-				'meta_value' => 'pending',
-				'fields'     => array( 'ID', 'user_login', 'user_email', 'user_registered' ),
+				'meta_key'   => TAILWIND_MEMBER_STATUS_META,
+				'meta_value' => TAILWIND_MEMBER_STATUS_PENDING,
+				'fields'     => array('ID', 'user_login', 'user_email', 'user_registered'),
 			)
 		);
 
 		$users = $query->get_results();
 
-		if ( empty( $users ) ) {
-			echo '<p>' . esc_html__( 'No pending members at the moment.', 'tailwind-acf' ) . '</p>';
+		if (empty($users)) {
+			echo '<p>' . esc_html__('No pending members at the moment.', 'tailwind-acf') . '</p>';
 			return;
 		}
 
 		echo '<table class="widefat striped">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Username', 'tailwind-acf' ) . '</th>';
-		echo '<th>' . esc_html__( 'Email', 'tailwind-acf' ) . '</th>';
-		echo '<th>' . esc_html__( 'Registered', 'tailwind-acf' ) . '</th>';
-		echo '<th class="column-links">' . esc_html__( 'Actions', 'tailwind-acf' ) . '</th>';
+		echo '<th>' . esc_html__('Username', 'tailwind-acf') . '</th>';
+		echo '<th>' . esc_html__('Email', 'tailwind-acf') . '</th>';
+		echo '<th>' . esc_html__('Registered', 'tailwind-acf') . '</th>';
+		echo '<th class="column-links">' . esc_html__('Actions', 'tailwind-acf') . '</th>';
 		echo '</tr></thead>';
 		echo '<tbody>';
 
-		foreach ( $users as $user ) {
+		foreach ($users as $user) {
 			$approve_url = wp_nonce_url(
 				add_query_arg(
 					array(
-						'tailwind-approve-user' => $user->ID,
+						'action'  => 'tailwind_approve_member',
+						'user_id' => $user->ID,
 					),
-					admin_url( 'users.php' )
+					admin_url('admin-post.php')
 				),
-				'tailwind-approve-user_' . $user->ID
+				'tailwind_approve_member_' . $user->ID
 			);
 
 			echo '<tr>';
-			echo '<td>' . esc_html( $user->user_login ) . '</td>';
-			echo '<td><a href="mailto:' . esc_attr( $user->user_email ) . '">' . esc_html( $user->user_email ) . '</a></td>';
-			echo '<td>' . esc_html( get_date_from_gmt( $user->user_registered, get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ) ) . '</td>';
-			echo '<td><a class="button button-primary" href="' . esc_url( $approve_url ) . '">' . esc_html__( 'Approve', 'tailwind-acf' ) . '</a></td>';
+			echo '<td>' . esc_html($user->user_login) . '</td>';
+			echo '<td><a href="mailto:' . esc_attr($user->user_email) . '">' . esc_html($user->user_email) . '</a></td>';
+			echo '<td>' . esc_html(get_date_from_gmt($user->user_registered, get_option('date_format') . ' ' . get_option('time_format'))) . '</td>';
+			echo '<td><a class="button button-primary" href="' . esc_url($approve_url) . '">' . esc_html__('Approve', 'tailwind-acf') . '</a></td>';
 			echo '</tr>';
 		}
 
