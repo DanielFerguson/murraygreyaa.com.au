@@ -163,8 +163,8 @@ if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['tailwind_cattle_nonce
             $field_errors['grade'] = __('Please select a valid grade.', 'tailwind-acf');
         }
 
-        if (empty($form_data['year_letter']) || ! preg_match('/^[A-Z]$/', $form_data['year_letter'])) {
-            $field_errors['year_letter'] = __('Year letter must be a single uppercase letter (A-Z).', 'tailwind-acf');
+        if (empty($form_data['year_letter']) || ! preg_match('/^[A-HJ-NP-Z]$/', $form_data['year_letter'])) {
+            $field_errors['year_letter'] = __('Year letter must be a single uppercase letter (A-Z, excluding I and O).', 'tailwind-acf');
         }
 
         if (empty($form_data['tattoo_number'])) {
@@ -389,10 +389,10 @@ if (! function_exists('tailwind_cattle_old_value')) {
                             value="<?php echo tailwind_cattle_old_value('year_letter', $form_data); ?>"
                             required
                             maxlength="1"
-                            pattern="[A-Za-z]"
+                            pattern="[A-HJ-NP-Za-hj-np-z]"
                             class="block w-full rounded-lg shadow-sm text-sm uppercase <?php echo tailwind_cattle_field_error_class('year_letter', $field_errors); ?>"
                             placeholder="A">
-                        <p class="mt-1 text-xs text-slate-500"><?php esc_html_e('Single letter (A-Z)', 'tailwind-acf'); ?></p>
+                        <p class="mt-1 text-xs text-slate-500"><?php esc_html_e('Single letter (A-Z, excluding I and O)', 'tailwind-acf'); ?></p>
                         <?php if (isset($field_errors['year_letter'])) : ?>
                             <p class="mt-1 text-sm text-red-600"><?php echo esc_html($field_errors['year_letter']); ?></p>
                         <?php endif; ?>

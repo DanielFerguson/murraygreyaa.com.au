@@ -171,7 +171,7 @@ function tailwind_register_cattle_acf_fields() {
 					'type'      => 'text',
 					'required'  => 1,
 					'maxlength' => 1,
-					'instructions' => __( 'Single uppercase letter (A-Z)', 'tailwind-acf' ),
+					'instructions' => __( 'Single uppercase letter (A-Z, excluding I and O)', 'tailwind-acf' ),
 				),
 				array(
 					'key'      => 'field_cattle_tattoo_number',

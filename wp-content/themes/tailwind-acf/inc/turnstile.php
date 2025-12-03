@@ -205,3 +205,8 @@ function tailwind_turnstile_validate_lostpassword( $errors ) {
 }
 add_action( 'lostpassword_post', 'tailwind_turnstile_validate_lostpassword' );
 
+
+
+
+
+

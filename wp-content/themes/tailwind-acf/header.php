@@ -14,6 +14,18 @@
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<?php wp_head(); ?>
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GRE2XLYWYM"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+
+		gtag('config', 'G-GRE2XLYWYM');
+	</script>
 </head>
 <?php
 $body_classes = get_body_class(
@@ -36,37 +48,42 @@ $nav_classes = 'hidden sm:block font-medium text-white nav-animated';
 $main_classes = 'pt-0';
 ?>
 <style>
-/* Navigation link animations */
-.nav-animated ul {
-	display: flex;
-	gap: 2rem;
-}
-.nav-animated a {
-	position: relative;
-	padding: 0.5rem 0;
-	transition: color 0.2s ease;
-}
-.nav-animated a::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 0;
-	height: 2px;
-	background: linear-gradient(90deg, #fbbf24, #f59e0b);
-	transition: width 0.3s ease;
-	border-radius: 1px;
-}
-.nav-animated a:hover::after,
-.nav-animated .current-menu-item a::after {
-	width: 100%;
-}
-.nav-animated a:hover {
-	color: #fde68a;
-}
-.nav-animated .current-menu-item a {
-	color: #fde68a;
-}
+	/* Navigation link animations */
+	.nav-animated ul {
+		display: flex;
+		gap: 2rem;
+	}
+
+	.nav-animated a {
+		position: relative;
+		padding: 0.5rem 0;
+		transition: color 0.2s ease;
+	}
+
+	.nav-animated a::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background: linear-gradient(90deg, #fbbf24, #f59e0b);
+		transition: width 0.3s ease;
+		border-radius: 1px;
+	}
+
+	.nav-animated a:hover::after,
+	.nav-animated .current-menu-item a::after {
+		width: 100%;
+	}
+
+	.nav-animated a:hover {
+		color: #fde68a;
+	}
+
+	.nav-animated .current-menu-item a {
+		color: #fde68a;
+	}
 </style>
 
 <body class="<?php echo esc_attr(implode(' ', $body_classes)); ?>">
