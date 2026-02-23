@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		mobileOverlay.classList.remove('is-open');
 		mobileButton.setAttribute('aria-expanded', 'false');
 		document.body.style.overflow = '';
+		mobileButton.focus();
 		setTimeout(function() {
 			mobileOverlay.classList.add('hidden');
 		}, 300);
@@ -141,13 +142,21 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	});
 
+	// Close mobile menu on resize to desktop
+	window.addEventListener('resize', function() {
+		if (window.innerWidth >= 640 && mobileOverlay && !mobileOverlay.classList.contains('hidden')) {
+			closeMobileMenu();
+		}
+	});
+
 	// Mobile accordion submenus
 	var mobileDropdowns = document.querySelectorAll('.mobile-nav-menu .has-dropdown');
 	mobileDropdowns.forEach(function(dropdown) {
 		var link = dropdown.querySelector(':scope > a');
 		link.addEventListener('click', function(e) {
 			e.preventDefault();
-			dropdown.classList.toggle('is-open');
+			var expanded = dropdown.classList.toggle('is-open');
+			link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 		});
 	});
 });
@@ -198,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		</div>
 	</header>
 	<!-- Mobile navigation drawer -->
-	<div id="mobile-menu-overlay" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+	<div id="mobile-menu-overlay" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog" aria-label="<?php esc_attr_e( 'Site navigation', 'tailwind-acf' ); ?>">
 		<div class="mobile-menu-backdrop fixed inset-0 bg-black/50" id="mobile-menu-backdrop"></div>
 		<nav class="mobile-menu-panel fixed inset-y-0 right-0 w-full max-w-xs bg-green-950 px-6 py-6 shadow-xl overflow-y-auto">
 			<div class="flex items-center justify-between mb-8">
