@@ -215,6 +215,7 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 											</tr>
 										</thead>
 										<tbody class="divide-y divide-slate-200 bg-white">
+											<?php $sex_labels = tailwind_cattle_get_sex_labels(); ?>
 											<?php foreach ($user_registrations as $registration) : ?>
 												<?php
 												$calf_name = get_field('calf_name', $registration->ID);
@@ -222,8 +223,6 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 												$sex       = get_field('sex', $registration->ID);
 												$grade     = get_field('grade', $registration->ID);
 												$post_date = get_the_date('', $registration);
-
-												$sex_labels = tailwind_cattle_get_sex_labels();
 												?>
 												<tr class="hover:bg-slate-50 transition-colors">
 													<td class="px-6 py-4 whitespace-nowrap">
