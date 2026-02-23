@@ -119,16 +119,30 @@ while (have_posts()) :
     <main id="primary" class="site-main bg-slate-50">
         <div class="mx-auto max-w-3xl px-6 py-16 sm:px-10 lg:px-12">
             <header class="mb-10">
-                <?php if (is_user_logged_in()) : ?>
-                    <nav class="mb-4">
-                        <a href="<?php echo esc_url(tailwind_member_get_dashboard_url()); ?>" class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-brand transition">
+                <nav class="mb-4">
+                    <?php
+                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+                    $referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+                    $search_page = get_page_by_path( 'animal-search' );
+                    $search_url  = $search_page ? get_permalink( $search_page ) : '';
+                    $is_from_search = $search_url && $referer && strpos( $referer, $search_url ) !== false;
+                    ?>
+                    <?php if ( $is_from_search ) : ?>
+                        <a href="<?php echo esc_url( $referer ); ?>" class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-brand transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                             </svg>
-                            <?php esc_html_e('Back to Dashboard', 'tailwind-acf'); ?>
+                            <?php esc_html_e( 'Back to Search', 'tailwind-acf' ); ?>
                         </a>
-                    </nav>
-                <?php endif; ?>
+                    <?php elseif ( is_user_logged_in() ) : ?>
+                        <a href="<?php echo esc_url( tailwind_member_get_dashboard_url() ); ?>" class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-brand transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                            <?php esc_html_e( 'Back to Dashboard', 'tailwind-acf' ); ?>
+                        </a>
+                    <?php endif; ?>
+                </nav>
 
                 <div class="flex items-start justify-between gap-4">
                     <div>
@@ -139,12 +153,14 @@ while (have_posts()) :
                             <?php echo esc_html($tattoo); ?>
                         </p>
                     </div>
-                    <?php if (function_exists('tailwind_get_cattle_status_badge')) : ?>
-                        <div class="mt-1">
-                            <?php echo tailwind_get_cattle_status_badge(get_post_status()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
-                            ?>
-                        </div>
-                    <?php endif; ?>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                            <?php echo esc_html( $grade_labels[ $grade ] ?? $grade ); ?>
+                        </span>
+                        <?php if ( function_exists( 'tailwind_get_cattle_status_badge' ) ) : ?>
+                            <?php echo tailwind_get_cattle_status_badge( get_post_status() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </header>
 
@@ -258,27 +274,25 @@ while (have_posts()) :
                         </h2>
 
                         <!-- Desktop: horizontal pedigree -->
-                        <div class="hidden md:block">
-                            <div class="flex items-stretch gap-0">
-                                <!-- Generation 1: Parents -->
-                                <div class="flex flex-col justify-center gap-4 min-w-[200px]">
-                                    <?php tailwind_render_pedigree_box($pedigree['sire'], __('Sire', 'tailwind-acf')); ?>
-                                    <?php tailwind_render_pedigree_box($pedigree['dam'], __('Dam', 'tailwind-acf')); ?>
-                                </div>
+                        <div class="hidden md:flex items-stretch gap-6">
+                            <!-- Generation 1: Parents -->
+                            <div class="w-5/12 flex flex-col justify-evenly gap-6">
+                                <?php tailwind_render_pedigree_box($pedigree['sire'], __('Sire', 'tailwind-acf')); ?>
+                                <?php tailwind_render_pedigree_box($pedigree['dam'], __('Dam', 'tailwind-acf')); ?>
+                            </div>
 
-                                <!-- Connector -->
-                                <div class="flex flex-col justify-center w-8">
-                                    <div class="flex-1 border-b-2 border-l-2 border-slate-200 rounded-bl-lg"></div>
-                                    <div class="flex-1 border-t-2 border-l-2 border-slate-200 rounded-tl-lg"></div>
-                                </div>
+                            <!-- Connector -->
+                            <div class="w-10 flex flex-col justify-center">
+                                <div class="flex-1 border-b-2 border-l-2 border-slate-200 rounded-bl-lg"></div>
+                                <div class="flex-1 border-t-2 border-l-2 border-slate-200 rounded-tl-lg"></div>
+                            </div>
 
-                                <!-- Generation 2: Grandparents -->
-                                <div class="flex flex-col justify-between gap-2 min-w-[200px]">
-                                    <?php tailwind_render_pedigree_box($pedigree['sire_sire'], __("Sire's Sire", 'tailwind-acf')); ?>
-                                    <?php tailwind_render_pedigree_box($pedigree['sire_dam'], __("Sire's Dam", 'tailwind-acf')); ?>
-                                    <?php tailwind_render_pedigree_box($pedigree['dam_sire'], __("Dam's Sire", 'tailwind-acf')); ?>
-                                    <?php tailwind_render_pedigree_box($pedigree['dam_dam'], __("Dam's Dam", 'tailwind-acf')); ?>
-                                </div>
+                            <!-- Generation 2: Grandparents -->
+                            <div class="flex-1 flex flex-col justify-between gap-3">
+                                <?php tailwind_render_pedigree_box($pedigree['sire_sire'], __("Sire's Sire", 'tailwind-acf')); ?>
+                                <?php tailwind_render_pedigree_box($pedigree['sire_dam'], __("Sire's Dam", 'tailwind-acf')); ?>
+                                <?php tailwind_render_pedigree_box($pedigree['dam_sire'], __("Dam's Sire", 'tailwind-acf')); ?>
+                                <?php tailwind_render_pedigree_box($pedigree['dam_dam'], __("Dam's Dam", 'tailwind-acf')); ?>
                             </div>
                         </div>
 
