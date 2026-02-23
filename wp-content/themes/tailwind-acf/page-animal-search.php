@@ -205,6 +205,7 @@ get_header();
 	<!-- Header Section -->
 	<div class="bg-green-950 py-16 sm:py-20">
 		<div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+			<?php tailwind_render_breadcrumbs(); ?>
 			<h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
 				<?php esc_html_e( 'Animal Search', 'tailwind-acf' ); ?>
 			</h1>

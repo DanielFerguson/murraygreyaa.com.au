@@ -86,6 +86,7 @@ if ( TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists( 'cattle_re
 		<main id="primary" class="site-main bg-slate-50">
 			<div class="mx-auto max-w-5xl px-6 py-16 sm:px-10 lg:px-12">
 				<header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+					<?php tailwind_render_breadcrumbs(); ?>
 					<div>
 					<h1 class="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 						<?php the_title(); ?>
