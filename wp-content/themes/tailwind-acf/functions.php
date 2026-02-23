@@ -224,9 +224,19 @@ if (file_exists($cattle_module)) {
 	require_once $cattle_module;
 }
 
+$cattle_import_module = __DIR__ . '/inc/cattle-import.php';
+if (file_exists($cattle_import_module)) {
+	require_once $cattle_import_module;
+}
+
 $turnstile_module = __DIR__ . '/inc/turnstile.php';
 if (file_exists($turnstile_module)) {
 	require_once $turnstile_module;
+}
+
+$dropdown_walker = __DIR__ . '/inc/class-dropdown-nav-walker.php';
+if (file_exists($dropdown_walker)) {
+	require_once $dropdown_walker;
 }
 
 add_action(
