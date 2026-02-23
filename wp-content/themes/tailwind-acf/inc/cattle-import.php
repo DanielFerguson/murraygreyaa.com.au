@@ -139,6 +139,32 @@ function tailwind_cattle_import_preview() {
 		return;
 	}
 
+	// Trim whitespace from header values and build column-name-to-index map.
+	$header  = array_map( 'trim', $header );
+	$col_map = array_flip( $header );
+
+	// Validate that all required columns exist.
+	$required_columns = array( 'Stud', 'Name', 'AnmlSex', 'Regn', 'Tat' );
+	$missing_columns  = array();
+	foreach ( $required_columns as $req_col ) {
+		if ( ! isset( $col_map[ $req_col ] ) ) {
+			$missing_columns[] = $req_col;
+		}
+	}
+
+	if ( ! empty( $missing_columns ) ) {
+		fclose( $handle );
+		echo '<div class="notice notice-error"><p>';
+		printf(
+			/* translators: %s: comma-separated list of missing column names */
+			esc_html__( 'The CSV file is missing required columns: %s', 'tailwind-acf' ),
+			esc_html( implode( ', ', $missing_columns ) )
+		);
+		echo '</p></div>';
+		tailwind_cattle_import_upload_form();
+		return;
+	}
+
 	// Count total data rows.
 	$total_rows   = 0;
 	$preview_rows = array();
@@ -191,32 +217,47 @@ function tailwind_cattle_import_preview() {
 	<form method="post" style="margin-top: 1em;">
 		<?php wp_nonce_field( 'cattle_import_run', 'cattle_import_nonce' ); ?>
 		<input type="hidden" name="cattle_import_step" value="import" />
+		<input type="hidden" name="cattle_import_col_map" value="<?php echo esc_attr( wp_json_encode( $col_map ) ); ?>" />
 		<?php submit_button( __( 'Run Import', 'tailwind-acf' ), 'primary', 'submit', true ); ?>
 	</form>
 	<?php
 }
 
 /**
+ * Safely retrieve a trimmed value from a CSV row using the column map.
+ *
+ * @param array  $row     Indexed array of CSV values.
+ * @param array  $col_map Column-name-to-index map.
+ * @param string $column  The column name to look up.
+ * @param string $default Default value if column is missing.
+ * @return string The trimmed cell value.
+ */
+function tailwind_cattle_import_get_col( $row, $col_map, $column, $default = '' ) {
+	if ( ! isset( $col_map[ $column ] ) ) {
+		return $default;
+	}
+	$index = $col_map[ $column ];
+	return isset( $row[ $index ] ) ? trim( $row[ $index ] ) : $default;
+}
+
+/**
  * Map a CSV row array to cattle registration field values.
  *
- * @param array $row Indexed array matching the CSV column order.
+ * @param array $row     Indexed array matching the CSV column order.
+ * @param array $col_map Column-name-to-index map (header name => numeric index).
  * @return array Associative array of field values.
  */
-function tailwind_cattle_import_map_row( $row ) {
-	// CSV column order:
-	// 0:Stud, 1:Name, 2:AnmlSex, 3:AnmlDOB, 4:ColourLiteral, 5:Regn,
-	// 6:HB, 7:AnmlGrade, 8:BTat, 9:Tat, 10:SHB, 11:SRegn, 12:SGrade,
-	// 13:DHB, 14:DRegn, 15:DGrade, 16:AnmlOwnerNo
-
+function tailwind_cattle_import_map_row( $row, $col_map ) {
 	// Sex mapping.
 	$sex_map = array(
 		'1' => 'M',
 		'2' => 'F',
 	);
-	$sex = isset( $sex_map[ trim( $row[2] ) ] ) ? $sex_map[ trim( $row[2] ) ] : '';
+	$sex_raw = tailwind_cattle_import_get_col( $row, $col_map, 'AnmlSex' );
+	$sex     = isset( $sex_map[ $sex_raw ] ) ? $sex_map[ $sex_raw ] : '';
 
 	// Date of birth.
-	$dob_raw = trim( $row[3] );
+	$dob_raw = tailwind_cattle_import_get_col( $row, $col_map, 'AnmlDOB' );
 	$dob     = '';
 	if ( ! empty( $dob_raw ) ) {
 		$timestamp = strtotime( $dob_raw );
@@ -232,7 +273,7 @@ function tailwind_cattle_import_map_row( $row ) {
 		'black'  => 'B',
 		'dun'    => 'D',
 	);
-	$colour_raw = strtolower( trim( $row[4] ) );
+	$colour_raw = strtolower( tailwind_cattle_import_get_col( $row, $col_map, 'ColourLiteral' ) );
 	$colour     = isset( $colour_map[ $colour_raw ] ) ? $colour_map[ $colour_raw ] : '';
 
 	// Grade mapping.
@@ -243,33 +284,35 @@ function tailwind_cattle_import_map_row( $row ) {
 		'4' => 'C',
 		'0' => 'PB',
 	);
-	$grade_raw = trim( $row[7] );
+	$grade_raw = tailwind_cattle_import_get_col( $row, $col_map, 'AnmlGrade' );
 	$grade     = isset( $grade_map[ $grade_raw ] ) ? $grade_map[ $grade_raw ] : 'PB';
 
-	$name   = trim( $row[1] );
-	$tattoo = trim( $row[9] );
+	$name   = tailwind_cattle_import_get_col( $row, $col_map, 'Name' );
+	$tattoo = tailwind_cattle_import_get_col( $row, $col_map, 'Tat' );
+	$sregn  = tailwind_cattle_import_get_col( $row, $col_map, 'SRegn' );
+	$dregn  = tailwind_cattle_import_get_col( $row, $col_map, 'DRegn' );
 
 	return array(
 		'post_title'          => $name . ( $tattoo ? ' (' . $tattoo . ')' : '' ),
 		'calf_name'           => $name,
-		'stud_name'           => trim( $row[0] ),
+		'stud_name'           => tailwind_cattle_import_get_col( $row, $col_map, 'Stud' ),
 		'sex'                 => $sex,
 		'date_of_birth'       => $dob,
 		'colour'              => $colour,
-		'registration_number' => trim( $row[5] ),
-		'herd_book'           => intval( $row[6] ),
+		'registration_number' => tailwind_cattle_import_get_col( $row, $col_map, 'Regn' ),
+		'herd_book'           => intval( tailwind_cattle_import_get_col( $row, $col_map, 'HB', '0' ) ),
 		'grade'               => $grade,
-		'brand_tattoo'        => trim( $row[8] ),
+		'brand_tattoo'        => tailwind_cattle_import_get_col( $row, $col_map, 'BTat' ),
 		'tattoo_number'       => $tattoo,
-		'sire_herd_book'      => intval( $row[10] ),
-		'sire_tattoo'         => trim( $row[11] ),
-		'sire_grade'          => trim( $row[12] ),
-		'dam_herd_book'       => intval( $row[13] ),
-		'dam_tattoo'          => trim( $row[14] ),
-		'dam_grade'           => trim( $row[15] ),
+		'sire_herd_book'      => intval( tailwind_cattle_import_get_col( $row, $col_map, 'SHB', '0' ) ),
+		'sire_tattoo'         => $sregn,
+		'sire_grade'          => tailwind_cattle_import_get_col( $row, $col_map, 'SGrade' ),
+		'dam_herd_book'       => intval( tailwind_cattle_import_get_col( $row, $col_map, 'DHB', '0' ) ),
+		'dam_tattoo'          => $dregn,
+		'dam_grade'           => tailwind_cattle_import_get_col( $row, $col_map, 'DGrade' ),
 		// Keep raw lineage values for Pass 2.
-		'_sregn'              => trim( $row[11] ),
-		'_dregn'              => trim( $row[14] ),
+		'_sregn'              => $sregn,
+		'_dregn'              => $dregn,
 	);
 }
 
@@ -317,8 +360,39 @@ function tailwind_cattle_import_run() {
 	// Prevent notification emails for every imported post.
 	remove_action( 'wp_insert_post', 'tailwind_cattle_notify_admin_on_submission', 10 );
 
-	// Skip header row.
-	fgetcsv( $handle );
+	// Read the header row and build the column map.
+	$header = fgetcsv( $handle );
+	if ( ! $header ) {
+		fclose( $handle );
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'The CSV file appears to be empty.', 'tailwind-acf' ) . '</p></div>';
+		tailwind_cattle_import_upload_form();
+		return;
+	}
+
+	$header  = array_map( 'trim', $header );
+	$col_map = array_flip( $header );
+
+	// Validate required columns are still present.
+	$required_columns = array( 'Stud', 'Name', 'AnmlSex', 'Regn', 'Tat' );
+	$missing_columns  = array();
+	foreach ( $required_columns as $req_col ) {
+		if ( ! isset( $col_map[ $req_col ] ) ) {
+			$missing_columns[] = $req_col;
+		}
+	}
+
+	if ( ! empty( $missing_columns ) ) {
+		fclose( $handle );
+		echo '<div class="notice notice-error"><p>';
+		printf(
+			/* translators: %s: comma-separated list of missing column names */
+			esc_html__( 'The CSV file is missing required columns: %s', 'tailwind-acf' ),
+			esc_html( implode( ', ', $missing_columns ) )
+		);
+		echo '</p></div>';
+		tailwind_cattle_import_upload_form();
+		return;
+	}
 
 	// ----- Pass 1: Create posts -----
 	$imported       = 0;
@@ -338,7 +412,7 @@ function tailwind_cattle_import_run() {
 			continue;
 		}
 
-		$fields = tailwind_cattle_import_map_row( $row );
+		$fields = tailwind_cattle_import_map_row( $row, $col_map );
 
 		$reg_number = $fields['registration_number'];
 
@@ -449,8 +523,6 @@ function tailwind_cattle_import_run() {
 					update_field( 'sire_name', $sire_name, $post_id );
 				}
 				$linked = true;
-			} else {
-				$lineage_unresolved++;
 			}
 		}
 
@@ -465,13 +537,15 @@ function tailwind_cattle_import_run() {
 					update_field( 'dam_name', $dam_name, $post_id );
 				}
 				$linked = true;
-			} else {
-				$lineage_unresolved++;
 			}
 		}
 
+		// Count per-animal: resolved if at least one parent was linked,
+		// unresolved if the animal has parent references but none could be resolved.
 		if ( $linked ) {
 			$lineage_resolved++;
+		} elseif ( ! empty( $sregn ) || ! empty( $dregn ) ) {
+			$lineage_unresolved++;
 		}
 	}
 
@@ -480,7 +554,7 @@ function tailwind_cattle_import_run() {
 
 	// Clean up temp file.
 	if ( file_exists( $expected_path ) ) {
-		unlink( $expected_path );
+		wp_delete_file( $expected_path );
 	}
 
 	// ----- Results summary -----
@@ -547,6 +621,7 @@ function tailwind_cattle_import_find_by_regn( $registration_number ) {
 			'post_type'      => 'cattle_registration',
 			'post_status'    => 'any',
 			'posts_per_page' => 1,
+			'no_found_rows'  => true,
 			'meta_query'     => array(
 				array(
 					'key'   => 'registration_number',
