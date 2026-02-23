@@ -339,9 +339,9 @@ get_header();
 
 	<!-- Results Section -->
 	<div class="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-12">
-		<?php if ( $has_filters ) : ?>
-			<div class="mb-6 flex items-center justify-between">
-				<p class="text-sm text-slate-600">
+		<div class="mb-6 flex items-center justify-between">
+			<p class="text-sm text-slate-600">
+				<?php if ( $has_filters ) : ?>
 					<?php
 					printf(
 						/* translators: %d: number of results */
@@ -349,9 +349,17 @@ get_header();
 						esc_html( $cattle_query->found_posts )
 					);
 					?>
-				</p>
-			</div>
-		<?php endif; ?>
+				<?php else : ?>
+					<?php
+					printf(
+						/* translators: %d: number of animals */
+						esc_html( _n( '%d animal registered', '%d animals registered', $cattle_query->found_posts, 'tailwind-acf' ) ),
+						esc_html( $cattle_query->found_posts )
+					);
+					?>
+				<?php endif; ?>
+			</p>
+		</div>
 
 		<?php if ( $cattle_query->have_posts() ) : ?>
 			<!-- Results Grid -->
