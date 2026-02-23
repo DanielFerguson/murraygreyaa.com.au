@@ -313,8 +313,8 @@ if (! function_exists('tailwind_cattle_old_value')) {
                     printf(
                         /* translators: 1: calf name, 2: tattoo number */
                         esc_html__( 'Editing: %1$s (%2$s)', 'tailwind-acf' ),
-                        esc_html( tailwind_cattle_old_value( 'calf_name', $form_data ) ),
-                        esc_html( tailwind_cattle_old_value( 'tattoo_number', $form_data ) )
+                        esc_html( $form_data['calf_name'] ?? '' ),
+                        esc_html( $form_data['tattoo_number'] ?? '' )
                     );
                     ?>
                 </span>
