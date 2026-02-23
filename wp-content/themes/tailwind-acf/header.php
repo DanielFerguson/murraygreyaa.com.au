@@ -13,6 +13,9 @@
 <head>
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preconnect" href="https://www.googletagmanager.com">
 	<?php wp_head(); ?>
 
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GRE2XLYWYM"></script>

@@ -640,3 +640,18 @@ function tailwind_disable_welcome_panel()
 	}
 }
 add_action('admin_init', 'tailwind_disable_welcome_panel');
+
+/**
+ * Skip lazy loading for hero background images.
+ *
+ * @param string $value   The loading attribute value.
+ * @param string $image   The HTML img tag.
+ * @param string $context Additional context.
+ * @return string
+ */
+add_filter( 'wp_img_tag_add_loading_attr', function ( $value, $image, $context ) {
+	if ( strpos( $image, 'data-parallax-speed' ) !== false ) {
+		return false;
+	}
+	return $value;
+}, 10, 3 );
