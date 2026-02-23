@@ -1,0 +1,75 @@
+name: Deploy Theme
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: wp-content/themes/tailwind-acf/package-lock.json
+
+      - name: Install dependencies
+        working-directory: wp-content/themes/tailwind-acf
+        run: npm ci
+
+      - name: Build CSS
+        working-directory: wp-content/themes/tailwind-acf
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f wp-content/themes/tailwind-acf/dist/main.css ]; then
+            echo "ERROR: dist/main.css was not generated"
+            exit 1
+          fi
+          echo "Build output size: $(wc -c < wp-content/themes/tailwind-acf/dist/main.css) bytes"
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy wp-content via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='node_modules/' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='vite.config.js' \
+            --exclude='postcss.config.js' \
+            --exclude='tailwind.config.js' \
+            --exclude='src/' \
+            --exclude='uploads/' \
+            --exclude='languages/' \
+            --exclude='upgrade/' \
+            --exclude='ai1wm-backups/' \
+            --exclude='wflogs/' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            wp-content/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/wp-content/
+
+      - name: Reload PHP-FPM
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            'sudo systemctl reload php-fpm || sudo systemctl reload php8.3-fpm || sudo systemctl reload php8.2-fpm || sudo systemctl reload php8.1-fpm || echo "PHP-FPM reload skipped"'
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

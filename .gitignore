@@ -39,4 +39,7 @@ wp-config.php
 # Node
 node_modules/
 
+# Theme build output (built by CI)
+wp-content/themes/tailwind-acf/dist/
+
 # End of https://www.toptal.com/developers/gitignore/api/wordpress
