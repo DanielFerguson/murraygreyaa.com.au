@@ -118,6 +118,16 @@ if ( $search_query ) {
 			'value'   => $search_query,
 			'compare' => 'LIKE',
 		),
+		array(
+			'key'     => 'registration_number',
+			'value'   => $search_query,
+			'compare' => 'LIKE',
+		),
+		array(
+			'key'     => 'stud_name',
+			'value'   => $search_query,
+			'compare' => 'LIKE',
+		),
 	);
 }
 
@@ -356,6 +366,8 @@ get_header();
 					$colour    = get_field( 'colour', $post_id );
 					$dob       = get_field( 'date_of_birth', $post_id );
 					$author    = get_userdata( get_post_field( 'post_author', $post_id ) );
+					$regn      = get_field( 'registration_number', $post_id );
+					$stud      = get_field( 'stud_name', $post_id );
 					?>
 					<a
 						href="<?php the_permalink(); ?>"
@@ -367,7 +379,7 @@ get_header();
 									<?php echo esc_html( $calf_name ); ?>
 								</h3>
 								<p class="mt-1 text-sm font-mono text-slate-500">
-									<?php echo esc_html( $tattoo ); ?>
+									<?php echo esc_html( $regn ?: $tattoo ); ?>
 								</p>
 							</div>
 							<span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
@@ -394,6 +406,12 @@ get_header();
 								<div>
 									<dt class="text-slate-500"><?php esc_html_e( 'Breeder', 'tailwind-acf' ); ?></dt>
 									<dd class="font-medium text-slate-900 truncate"><?php echo esc_html( $author->display_name ); ?></dd>
+								</div>
+							<?php endif; ?>
+							<?php if ( $stud ) : ?>
+								<div>
+									<dt class="text-slate-500"><?php esc_html_e( 'Stud', 'tailwind-acf' ); ?></dt>
+									<dd class="font-medium text-slate-900 truncate"><?php echo esc_html( $stud ); ?></dd>
 								</div>
 							<?php endif; ?>
 						</dl>
