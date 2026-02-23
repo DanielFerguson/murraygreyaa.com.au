@@ -60,11 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		link.addEventListener('click', function(e) {
 			if (window.innerWidth < 1024) {
 				e.preventDefault();
-				dropdown.classList.toggle('is-open');
+				var isOpen = dropdown.classList.toggle('is-open');
+				link.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 
 				dropdowns.forEach(function(other) {
 					if (other !== dropdown) {
 						other.classList.remove('is-open');
+						var otherLink = other.querySelector(':scope > a');
+						if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
 					}
 				});
 			}

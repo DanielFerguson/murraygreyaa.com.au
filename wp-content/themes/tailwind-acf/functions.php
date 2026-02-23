@@ -186,10 +186,10 @@ add_action('enqueue_block_editor_assets', 'tailwind_acf_enqueue_block_editor_ass
 /**
  * Render breadcrumb navigation.
  */
-function tailwind_render_breadcrumbs() {
+function tailwind_render_breadcrumbs( $class = 'text-slate-500' ) {
 	if ( function_exists( 'yoast_breadcrumb' ) ) {
 		yoast_breadcrumb(
-			'<nav class="mb-4 text-sm text-slate-500" aria-label="' . esc_attr__( 'Breadcrumb', 'tailwind-acf' ) . '">',
+			'<nav class="mb-4 text-sm ' . esc_attr( $class ) . '" aria-label="' . esc_attr__( 'Breadcrumb', 'tailwind-acf' ) . '">',
 			'</nav>'
 		);
 	}

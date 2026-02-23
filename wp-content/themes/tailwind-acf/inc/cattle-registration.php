@@ -1246,7 +1246,7 @@ function tailwind_cattle_structured_data() {
 
 	printf(
 		'<script type="application/ld+json">%s</script>' . "\n",
-		wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+		wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG )
 	);
 }
 add_action( 'wp_head', 'tailwind_cattle_structured_data' );

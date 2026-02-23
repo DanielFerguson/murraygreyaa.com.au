@@ -226,7 +226,7 @@ if ( TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists( 'cattle_re
 											</div>
 											<?php
 											if ( function_exists( 'tailwind_get_cattle_status_badge' ) ) {
-												echo tailwind_get_cattle_status_badge( $registration->post_status );
+												echo wp_kses_post( tailwind_get_cattle_status_badge( $registration->post_status ) );
 											}
 											?>
 										</div>

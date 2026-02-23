@@ -37,7 +37,7 @@ if (have_posts()) :
 		<article <?php post_class('post-entry'); ?>>
 			<header class="relative isolate overflow-hidden bg-green-950 text-white">
 				<div class="relative mx-auto max-w-5xl px-6 py-16 sm:px-10 sm:pt-8 sm:py-16 lg:px-12">
-					<?php tailwind_render_breadcrumbs(); ?>
+					<?php tailwind_render_breadcrumbs( 'text-green-100/60' ); ?>
 					<nav class="mb-6 text-sm text-slate-300">
 						<a class="inline-flex items-center gap-2 transition hover:text-white" href="<?php echo esc_url($back_link); ?>">
 							<svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
