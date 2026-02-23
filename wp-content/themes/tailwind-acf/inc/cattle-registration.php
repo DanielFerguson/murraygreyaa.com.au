@@ -527,10 +527,12 @@ function tailwind_cattle_admin_columns( $columns ) {
 
 		// Add custom columns after title.
 		if ( 'title' === $key ) {
-			$new_columns['tattoo']    = __( 'Tattoo', 'tailwind-acf' );
-			$new_columns['sex']       = __( 'Sex', 'tailwind-acf' );
-			$new_columns['grade']     = __( 'Grade', 'tailwind-acf' );
-			$new_columns['submitter'] = __( 'Submitter', 'tailwind-acf' );
+			$new_columns['registration_number'] = __( 'Registration', 'tailwind-acf' );
+			$new_columns['stud_name']           = __( 'Stud', 'tailwind-acf' );
+			$new_columns['tattoo']              = __( 'Tattoo', 'tailwind-acf' );
+			$new_columns['sex']                 = __( 'Sex', 'tailwind-acf' );
+			$new_columns['grade']               = __( 'Grade', 'tailwind-acf' );
+			$new_columns['submitter']           = __( 'Submitter', 'tailwind-acf' );
 		}
 	}
 
@@ -546,6 +548,16 @@ add_filter( 'manage_cattle_registration_posts_columns', 'tailwind_cattle_admin_c
  */
 function tailwind_cattle_admin_column_content( $column, $post_id ) {
 	switch ( $column ) {
+		case 'registration_number':
+			$regn = get_field( 'registration_number', $post_id );
+			echo esc_html( $regn ?: '—' );
+			break;
+
+		case 'stud_name':
+			$stud = get_field( 'stud_name', $post_id );
+			echo esc_html( $stud ?: '—' );
+			break;
+
 		case 'tattoo':
 			$tattoo = get_field( 'tattoo_number', $post_id );
 			echo esc_html( $tattoo ?: '—' );
@@ -818,4 +830,132 @@ function tailwind_get_cattle_status_badge( $status ) {
 		esc_html( $label )
 	);
 }
+
+/**
+ * Add "Change Owner" to bulk actions dropdown for cattle registrations.
+ *
+ * @param array $actions Existing bulk actions.
+ * @return array
+ */
+function tailwind_cattle_bulk_actions( $actions ) {
+	$actions['change_owner'] = __( 'Change Owner', 'tailwind-acf' );
+	return $actions;
+}
+add_filter( 'bulk_actions-edit-cattle_registration', 'tailwind_cattle_bulk_actions' );
+
+/**
+ * Render a user dropdown above the cattle list table for bulk owner assignment.
+ *
+ * @param string $which Top or bottom.
+ */
+function tailwind_cattle_owner_dropdown( $which ) {
+	global $typenow;
+
+	if ( 'cattle_registration' !== $typenow || 'top' !== $which ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$users = get_users(
+		array(
+			'meta_key'   => 'tailwind_member_status',
+			'meta_value' => 'approved',
+			'orderby'    => 'display_name',
+			'order'      => 'ASC',
+		)
+	);
+
+	?>
+	<label for="cattle_new_owner" class="screen-reader-text"><?php esc_html_e( 'New Owner', 'tailwind-acf' ); ?></label>
+	<select name="cattle_new_owner" id="cattle_new_owner" style="float:none; margin-left: 6px;">
+		<option value=""><?php esc_html_e( '— Select Owner —', 'tailwind-acf' ); ?></option>
+		<option value="0"><?php esc_html_e( 'No Owner (Unassigned)', 'tailwind-acf' ); ?></option>
+		<?php foreach ( $users as $user ) : ?>
+			<option value="<?php echo esc_attr( $user->ID ); ?>">
+				<?php echo esc_html( $user->display_name . ' (' . $user->user_email . ')' ); ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
+	<?php
+}
+add_action( 'restrict_manage_posts', 'tailwind_cattle_owner_dropdown' );
+
+/**
+ * Handle the "Change Owner" bulk action.
+ *
+ * @param string $redirect_url The redirect URL.
+ * @param string $action       The bulk action being taken.
+ * @param array  $post_ids     The post IDs to act on.
+ * @return string
+ */
+function tailwind_cattle_handle_bulk_change_owner( $redirect_url, $action, $post_ids ) {
+	if ( 'change_owner' !== $action ) {
+		return $redirect_url;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return $redirect_url;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WP handles bulk action nonce.
+	$new_owner = isset( $_GET['cattle_new_owner'] ) ? intval( $_GET['cattle_new_owner'] ) : '';
+
+	if ( '' === $new_owner && ! isset( $_GET['cattle_new_owner'] ) ) {
+		return add_query_arg( 'owner_error', '1', $redirect_url );
+	}
+
+	$updated = 0;
+	foreach ( $post_ids as $post_id ) {
+		$post = get_post( $post_id );
+		if ( $post && 'cattle_registration' === $post->post_type ) {
+			wp_update_post(
+				array(
+					'ID'          => $post_id,
+					'post_author' => $new_owner,
+				)
+			);
+			$updated++;
+		}
+	}
+
+	return add_query_arg( 'owner_updated', $updated, $redirect_url );
+}
+add_filter( 'handle_bulk_actions-edit-cattle_registration', 'tailwind_cattle_handle_bulk_change_owner', 10, 3 );
+
+/**
+ * Show admin notice after bulk owner change.
+ */
+function tailwind_cattle_bulk_owner_notices() {
+	$screen = get_current_screen();
+	if ( ! $screen || 'edit-cattle_registration' !== $screen->id ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only.
+	if ( isset( $_GET['owner_updated'] ) ) {
+		$count = absint( $_GET['owner_updated'] );
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+			esc_html(
+				sprintf(
+					/* translators: %d: number of posts updated */
+					_n( '%d registration updated.', '%d registrations updated.', $count, 'tailwind-acf' ),
+					$count
+				)
+			)
+		);
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_GET['owner_error'] ) ) {
+		printf(
+			'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+			esc_html__( 'Please select an owner from the dropdown before applying the "Change Owner" action.', 'tailwind-acf' )
+		);
+	}
+}
+add_action( 'admin_notices', 'tailwind_cattle_bulk_owner_notices' );
 
