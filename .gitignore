@@ -30,6 +30,9 @@ wp-config.php
 # Uploads
 /wp-content/uploads/
 
+# Backups
+/wp-content/ai1wm-backups/
+
 # Log files
 *.log
 
