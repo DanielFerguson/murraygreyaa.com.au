@@ -223,11 +223,7 @@ if (TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists('cattle_regi
 												$grade     = get_field('grade', $registration->ID);
 												$post_date = get_the_date('', $registration);
 
-												$sex_labels = array(
-													'M' => __('Male', 'tailwind-acf'),
-													'F' => __('Female', 'tailwind-acf'),
-													'S' => __('Steer', 'tailwind-acf'),
-												);
+												$sex_labels = tailwind_cattle_get_sex_labels();
 												?>
 												<tr class="hover:bg-slate-50 transition-colors">
 													<td class="px-6 py-4 whitespace-nowrap">

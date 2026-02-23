@@ -34,33 +34,10 @@ while (have_posts()) :
     $dam_tattoo = get_field('dam_tattoo', $post_id);
 
     // Labels.
-    $grade_labels = array(
-        'PB' => __('Pure Breed', 'tailwind-acf'),
-        'A'  => __('A Grade', 'tailwind-acf'),
-        'B'  => __('B Grade', 'tailwind-acf'),
-        'C'  => __('C Grade', 'tailwind-acf'),
-    );
-
-    $sex_labels = array(
-        'M' => __('Male', 'tailwind-acf'),
-        'F' => __('Female', 'tailwind-acf'),
-        'S' => __('Steer', 'tailwind-acf'),
-    );
-
-    $colour_labels = array(
-        'G' => __('Grey', 'tailwind-acf'),
-        'S' => __('Silver', 'tailwind-acf'),
-        'B' => __('Black', 'tailwind-acf'),
-        'D' => __('Dun', 'tailwind-acf'),
-    );
-
-    $calving_labels = array(
-        '1' => __('Unassisted', 'tailwind-acf'),
-        '2' => __('Assisted', 'tailwind-acf'),
-        '3' => __('Fully Assisted', 'tailwind-acf'),
-        '4' => __('Caesarean', 'tailwind-acf'),
-        '5' => __('Breach', 'tailwind-acf'),
-    );
+    $grade_labels   = tailwind_cattle_get_grade_labels();
+    $sex_labels     = tailwind_cattle_get_sex_labels();
+    $colour_labels  = tailwind_cattle_get_colour_labels();
+    $calving_labels = tailwind_cattle_get_calving_ease_labels();
 
     // Format date.
     $dob_formatted = $dob ? date_i18n(get_option('date_format'), strtotime($dob)) : '';
@@ -234,6 +211,7 @@ while (have_posts()) :
 endwhile;
 
 get_footer();
+
 
 
 

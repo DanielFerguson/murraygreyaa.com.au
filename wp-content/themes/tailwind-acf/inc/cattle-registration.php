@@ -129,6 +129,118 @@ function tailwind_create_animal_search_page() {
 add_action( 'init', 'tailwind_create_animal_search_page', 20 );
 
 /**
+ * Get cattle grade options for forms.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_grade_options() {
+	return array(
+		'PB' => __( 'PB: Pure Breed', 'tailwind-acf' ),
+		'A'  => __( 'A: A Grade', 'tailwind-acf' ),
+		'B'  => __( 'B: B Grade', 'tailwind-acf' ),
+		'C'  => __( 'C: C Grade', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle grade labels for display.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_grade_labels() {
+	return array(
+		'PB' => __( 'Pure Breed', 'tailwind-acf' ),
+		'A'  => __( 'A Grade', 'tailwind-acf' ),
+		'B'  => __( 'B Grade', 'tailwind-acf' ),
+		'C'  => __( 'C Grade', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle sex options for forms.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_sex_options() {
+	return array(
+		'M' => __( 'M: Male', 'tailwind-acf' ),
+		'F' => __( 'F: Female', 'tailwind-acf' ),
+		'S' => __( 'S: Steer', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle sex labels for display.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_sex_labels() {
+	return array(
+		'M' => __( 'Male', 'tailwind-acf' ),
+		'F' => __( 'Female', 'tailwind-acf' ),
+		'S' => __( 'Steer', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle colour options for forms.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_colour_options() {
+	return array(
+		'G' => __( 'G: Grey', 'tailwind-acf' ),
+		'S' => __( 'S: Silver', 'tailwind-acf' ),
+		'B' => __( 'B: Black', 'tailwind-acf' ),
+		'D' => __( 'D: Dun', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle colour labels for display.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_colour_labels() {
+	return array(
+		'G' => __( 'Grey', 'tailwind-acf' ),
+		'S' => __( 'Silver', 'tailwind-acf' ),
+		'B' => __( 'Black', 'tailwind-acf' ),
+		'D' => __( 'Dun', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle calving ease options for forms.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_calving_ease_options() {
+	return array(
+		'1' => __( '1: Unassisted', 'tailwind-acf' ),
+		'2' => __( '2: Assisted', 'tailwind-acf' ),
+		'3' => __( '3: Fully Assisted', 'tailwind-acf' ),
+		'4' => __( '4: Caesarean', 'tailwind-acf' ),
+		'5' => __( '5: Breach', 'tailwind-acf' ),
+	);
+}
+
+/**
+ * Get cattle calving ease labels for display.
+ *
+ * @return array
+ */
+function tailwind_cattle_get_calving_ease_labels() {
+	return array(
+		'1' => __( 'Unassisted', 'tailwind-acf' ),
+		'2' => __( 'Assisted', 'tailwind-acf' ),
+		'3' => __( 'Fully Assisted', 'tailwind-acf' ),
+		'4' => __( 'Caesarean', 'tailwind-acf' ),
+		'5' => __( 'Breach', 'tailwind-acf' ),
+	);
+}
+
+/**
  * Register ACF field group for cattle registrations.
  */
 function tailwind_register_cattle_acf_fields() {
@@ -156,12 +268,7 @@ function tailwind_register_cattle_acf_fields() {
 					'name'    => 'grade',
 					'type'    => 'select',
 					'required' => 1,
-					'choices' => array(
-						'PB' => __( 'PB: Pure Breed', 'tailwind-acf' ),
-						'A'  => __( 'A: A Grade', 'tailwind-acf' ),
-						'B'  => __( 'B: B Grade', 'tailwind-acf' ),
-						'C'  => __( 'C: C Grade', 'tailwind-acf' ),
-					),
+					'choices' => tailwind_cattle_get_grade_options(),
 					'default_value' => 'PB',
 				),
 				array(
@@ -206,11 +313,7 @@ function tailwind_register_cattle_acf_fields() {
 					'name'     => 'sex',
 					'type'     => 'select',
 					'required' => 1,
-					'choices'  => array(
-						'M' => __( 'M: Male', 'tailwind-acf' ),
-						'F' => __( 'F: Female', 'tailwind-acf' ),
-						'S' => __( 'S: Steer', 'tailwind-acf' ),
-					),
+					'choices'  => tailwind_cattle_get_sex_options(),
 				),
 				array(
 					'key'     => 'field_cattle_colour',
@@ -218,12 +321,7 @@ function tailwind_register_cattle_acf_fields() {
 					'name'    => 'colour',
 					'type'    => 'select',
 					'required' => 1,
-					'choices' => array(
-						'G' => __( 'G: Grey', 'tailwind-acf' ),
-						'S' => __( 'S: Silver', 'tailwind-acf' ),
-						'B' => __( 'B: Black', 'tailwind-acf' ),
-						'D' => __( 'D: Dun', 'tailwind-acf' ),
-					),
+					'choices' => tailwind_cattle_get_colour_options(),
 				),
 				array(
 					'key'      => 'field_cattle_calving_ease',
@@ -231,13 +329,7 @@ function tailwind_register_cattle_acf_fields() {
 					'name'     => 'calving_ease',
 					'type'     => 'select',
 					'required' => 1,
-					'choices'  => array(
-						'1' => __( '1: Unassisted', 'tailwind-acf' ),
-						'2' => __( '2: Assisted', 'tailwind-acf' ),
-						'3' => __( '3: Fully Assisted', 'tailwind-acf' ),
-						'4' => __( '4: Caesarean', 'tailwind-acf' ),
-						'5' => __( '5: Breach', 'tailwind-acf' ),
-					),
+					'choices'  => tailwind_cattle_get_calving_ease_options(),
 					'default_value' => '1',
 				),
 				// Boolean Flags.
@@ -388,11 +480,7 @@ function tailwind_cattle_admin_column_content( $column, $post_id ) {
 
 		case 'sex':
 			$sex = get_field( 'sex', $post_id );
-			$sex_labels = array(
-				'M' => __( 'Male', 'tailwind-acf' ),
-				'F' => __( 'Female', 'tailwind-acf' ),
-				'S' => __( 'Steer', 'tailwind-acf' ),
-			);
+			$sex_labels = tailwind_cattle_get_sex_labels();
 			echo esc_html( $sex_labels[ $sex ] ?? '—' );
 			break;
 
@@ -579,11 +667,7 @@ function tailwind_cattle_notify_admin_on_submission( $post_id, $post, $update ) 
 	$grade     = get_field( 'grade', $post_id );
 	$sex       = get_field( 'sex', $post_id );
 
-	$sex_labels = array(
-		'M' => __( 'Male', 'tailwind-acf' ),
-		'F' => __( 'Female', 'tailwind-acf' ),
-		'S' => __( 'Steer', 'tailwind-acf' ),
-	);
+	$sex_labels = tailwind_cattle_get_sex_labels();
 
 	$edit_url = admin_url( 'post.php?post=' . $post_id . '&action=edit' );
 

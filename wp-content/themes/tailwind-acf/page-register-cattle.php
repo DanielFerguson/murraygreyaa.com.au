@@ -79,37 +79,10 @@ if (isset($_GET['edit'])) {
     }
 }
 
-// Grade options.
-$grade_options = array(
-    'PB' => __('PB: Pure Breed', 'tailwind-acf'),
-    'A'  => __('A: A Grade', 'tailwind-acf'),
-    'B'  => __('B: B Grade', 'tailwind-acf'),
-    'C'  => __('C: C Grade', 'tailwind-acf'),
-);
-
-// Sex options.
-$sex_options = array(
-    'M' => __('M: Male', 'tailwind-acf'),
-    'F' => __('F: Female', 'tailwind-acf'),
-    'S' => __('S: Steer', 'tailwind-acf'),
-);
-
-// Colour options.
-$colour_options = array(
-    'G' => __('G: Grey', 'tailwind-acf'),
-    'S' => __('S: Silver', 'tailwind-acf'),
-    'B' => __('B: Black', 'tailwind-acf'),
-    'D' => __('D: Dun', 'tailwind-acf'),
-);
-
-// Calving ease options.
-$calving_ease_options = array(
-    '1' => __('1: Unassisted', 'tailwind-acf'),
-    '2' => __('2: Assisted', 'tailwind-acf'),
-    '3' => __('3: Fully Assisted', 'tailwind-acf'),
-    '4' => __('4: Caesarean', 'tailwind-acf'),
-    '5' => __('5: Breach', 'tailwind-acf'),
-);
+$grade_options        = tailwind_cattle_get_grade_options();
+$sex_options          = tailwind_cattle_get_sex_options();
+$colour_options       = tailwind_cattle_get_colour_options();
+$calving_ease_options = tailwind_cattle_get_calving_ease_options();
 
 // Handle form submission.
 if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['tailwind_cattle_nonce'])) {

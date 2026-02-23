@@ -13,28 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Filter options.
-$grade_options = array(
-	''   => __( 'All Grades', 'tailwind-acf' ),
-	'PB' => __( 'PB: Pure Breed', 'tailwind-acf' ),
-	'A'  => __( 'A Grade', 'tailwind-acf' ),
-	'B'  => __( 'B Grade', 'tailwind-acf' ),
-	'C'  => __( 'C Grade', 'tailwind-acf' ),
-);
-
-$sex_options = array(
-	''  => __( 'All', 'tailwind-acf' ),
-	'M' => __( 'Male', 'tailwind-acf' ),
-	'F' => __( 'Female', 'tailwind-acf' ),
-	'S' => __( 'Steer', 'tailwind-acf' ),
-);
-
-$colour_options = array(
-	''  => __( 'All Colours', 'tailwind-acf' ),
-	'G' => __( 'Grey', 'tailwind-acf' ),
-	'S' => __( 'Silver', 'tailwind-acf' ),
-	'B' => __( 'Black', 'tailwind-acf' ),
-	'D' => __( 'Dun', 'tailwind-acf' ),
-);
+$grade_options  = array( '' => __( 'All Grades', 'tailwind-acf' ) ) + tailwind_cattle_get_grade_options();
+$sex_options    = array( '' => __( 'All', 'tailwind-acf' ) ) + tailwind_cattle_get_sex_options();
+$colour_options = array( '' => __( 'All Colours', 'tailwind-acf' ) ) + tailwind_cattle_get_colour_options();
 
 // Year letters A-Z.
 $year_options = array( '' => __( 'All Years', 'tailwind-acf' ) );
@@ -201,18 +182,8 @@ if ( $search_query && ! $cattle_query->have_posts() ) {
 }
 
 // Labels for display.
-$sex_labels = array(
-	'M' => __( 'Male', 'tailwind-acf' ),
-	'F' => __( 'Female', 'tailwind-acf' ),
-	'S' => __( 'Steer', 'tailwind-acf' ),
-);
-
-$colour_labels = array(
-	'G' => __( 'Grey', 'tailwind-acf' ),
-	'S' => __( 'Silver', 'tailwind-acf' ),
-	'B' => __( 'Black', 'tailwind-acf' ),
-	'D' => __( 'Dun', 'tailwind-acf' ),
-);
+$sex_labels    = tailwind_cattle_get_sex_labels();
+$colour_labels = tailwind_cattle_get_colour_labels();
 
 // Check if any filters are active.
 $has_filters = $search_query || $filter_grade || $filter_sex || $filter_colour || $filter_year;
@@ -531,6 +502,7 @@ get_header();
 
 <?php
 get_footer();
+
 
 
 
