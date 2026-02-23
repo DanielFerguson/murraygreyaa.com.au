@@ -56,7 +56,10 @@ if (isset($_GET['edit'])) {
             'calf_name'     => get_field('calf_name', $edit_post_id) ?: '',
             'grade'         => get_field('grade', $edit_post_id) ?: '',
             'year_letter'   => get_field('year_letter', $edit_post_id) ?: '',
-            'tattoo_number' => get_field('tattoo_number', $edit_post_id) ?: '',
+            'tattoo_number'      => get_field('tattoo_number', $edit_post_id) ?: '',
+            'registration_number' => get_field('registration_number', $edit_post_id) ?: '',
+            'stud_name'           => get_field('stud_name', $edit_post_id) ?: '',
+            'brand_tattoo'        => get_field('brand_tattoo', $edit_post_id) ?: '',
             'date_of_birth' => get_field('date_of_birth', $edit_post_id) ?: '',
             'birth_weight'  => get_field('birth_weight', $edit_post_id) ?: '',
             'sex'           => get_field('sex', $edit_post_id) ?: '',
@@ -112,7 +115,10 @@ if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['tailwind_cattle_nonce
             'calf_name'     => sanitize_text_field(wp_unslash($_POST['calf_name'] ?? '')),
             'grade'         => sanitize_text_field(wp_unslash($_POST['grade'] ?? '')),
             'year_letter'   => strtoupper(sanitize_text_field(wp_unslash($_POST['year_letter'] ?? ''))),
-            'tattoo_number' => sanitize_text_field(wp_unslash($_POST['tattoo_number'] ?? '')),
+            'tattoo_number'      => sanitize_text_field(wp_unslash($_POST['tattoo_number'] ?? '')),
+            'registration_number' => sanitize_text_field(wp_unslash($_POST['registration_number'] ?? '')),
+            'stud_name'           => sanitize_text_field(wp_unslash($_POST['stud_name'] ?? '')),
+            'brand_tattoo'        => sanitize_text_field(wp_unslash($_POST['brand_tattoo'] ?? '')),
             'date_of_birth' => sanitize_text_field(wp_unslash($_POST['date_of_birth'] ?? '')),
             'birth_weight'  => floatval($_POST['birth_weight'] ?? 0),
             'sex'           => sanitize_text_field(wp_unslash($_POST['sex'] ?? '')),
@@ -202,6 +208,9 @@ if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['tailwind_cattle_nonce
                 update_field('grade', $form_data['grade'], $post_id);
                 update_field('year_letter', $form_data['year_letter'], $post_id);
                 update_field('tattoo_number', $form_data['tattoo_number'], $post_id);
+                update_field('registration_number', $form_data['registration_number'], $post_id);
+                update_field('stud_name', $form_data['stud_name'], $post_id);
+                update_field('brand_tattoo', $form_data['brand_tattoo'], $post_id);
                 update_field('date_of_birth', $form_data['date_of_birth'], $post_id);
                 update_field('birth_weight', $form_data['birth_weight'], $post_id);
                 update_field('sex', $form_data['sex'], $post_id);
@@ -386,6 +395,49 @@ if (! function_exists('tailwind_cattle_old_value')) {
                         <?php if (isset($field_errors['tattoo_number'])) : ?>
                             <p class="mt-1 text-sm text-red-600"><?php echo esc_html($field_errors['tattoo_number']); ?></p>
                         <?php endif; ?>
+                    </div>
+
+                    <!-- Registration Number -->
+                    <div>
+                        <label for="registration_number" class="block text-sm font-medium text-slate-700 mb-1">
+                            <?php esc_html_e('Registration Number', 'tailwind-acf'); ?>
+                        </label>
+                        <input
+                            type="text"
+                            id="registration_number"
+                            name="registration_number"
+                            value="<?php echo tailwind_cattle_old_value('registration_number', $form_data); ?>"
+                            class="block w-full rounded-lg border-slate-300 shadow-sm text-sm focus:border-brand focus:ring-brand"
+                            placeholder="e.g. RIB G70">
+                        <p class="mt-1 text-xs text-slate-500"><?php esc_html_e('Optional. Full registration number.', 'tailwind-acf'); ?></p>
+                    </div>
+
+                    <!-- Stud Name -->
+                    <div>
+                        <label for="stud_name" class="block text-sm font-medium text-slate-700 mb-1">
+                            <?php esc_html_e('Stud Name', 'tailwind-acf'); ?>
+                        </label>
+                        <input
+                            type="text"
+                            id="stud_name"
+                            name="stud_name"
+                            value="<?php echo tailwind_cattle_old_value('stud_name', $form_data); ?>"
+                            class="block w-full rounded-lg border-slate-300 shadow-sm text-sm focus:border-brand focus:ring-brand">
+                    </div>
+
+                    <!-- Brand Tattoo -->
+                    <div>
+                        <label for="brand_tattoo" class="block text-sm font-medium text-slate-700 mb-1">
+                            <?php esc_html_e('Brand Tattoo', 'tailwind-acf'); ?>
+                        </label>
+                        <input
+                            type="text"
+                            id="brand_tattoo"
+                            name="brand_tattoo"
+                            value="<?php echo tailwind_cattle_old_value('brand_tattoo', $form_data); ?>"
+                            class="block w-full rounded-lg border-slate-300 shadow-sm text-sm focus:border-brand focus:ring-brand"
+                            placeholder="e.g. RIB">
+                        <p class="mt-1 text-xs text-slate-500"><?php esc_html_e('Optional. Tattoo prefix.', 'tailwind-acf'); ?></p>
                     </div>
                 </div>
             </div>
