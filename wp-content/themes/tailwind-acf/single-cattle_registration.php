@@ -114,6 +114,10 @@ while (have_posts()) :
 
     // Format date.
     $dob_formatted = $dob ? date_i18n(get_option('date_format'), strtotime($dob)) : '';
+
+    // Search page URL for clickable filters.
+    $search_page = get_page_by_path('animal-search');
+    $search_url  = $search_page ? get_permalink($search_page) : '';
 ?>
 
     <main id="primary" class="site-main bg-slate-50">
@@ -184,7 +188,13 @@ while (have_posts()) :
                         <?php if ($stud_name) : ?>
                             <div class="border-b border-slate-100 pb-3">
                                 <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Stud', 'tailwind-acf'); ?></dt>
-                                <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($stud_name); ?></dd>
+                                <dd class="mt-1 text-base text-slate-900">
+                                    <?php if ($search_url) : ?>
+                                        <a href="<?php echo esc_url(add_query_arg('stud', $stud_name, $search_url)); ?>" class="text-green-700 hover:text-green-900 hover:underline"><?php echo esc_html($stud_name); ?></a>
+                                    <?php else : ?>
+                                        <?php echo esc_html($stud_name); ?>
+                                    <?php endif; ?>
+                                </dd>
                             </div>
                         <?php endif; ?>
 
@@ -197,22 +207,46 @@ while (have_posts()) :
 
                         <div class="border-b border-slate-100 pb-3">
                             <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Grade', 'tailwind-acf'); ?></dt>
-                            <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($grade_labels[$grade] ?? $grade); ?></dd>
+                            <dd class="mt-1 text-base text-slate-900">
+                                <?php if ($search_url && $grade) : ?>
+                                    <a href="<?php echo esc_url(add_query_arg('grade', $grade, $search_url)); ?>" class="text-green-700 hover:text-green-900 hover:underline"><?php echo esc_html($grade_labels[$grade] ?? $grade); ?></a>
+                                <?php else : ?>
+                                    <?php echo esc_html($grade_labels[$grade] ?? $grade); ?>
+                                <?php endif; ?>
+                            </dd>
                         </div>
 
                         <div class="border-b border-slate-100 pb-3">
                             <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Year Letter', 'tailwind-acf'); ?></dt>
-                            <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($year_letter); ?></dd>
+                            <dd class="mt-1 text-base text-slate-900">
+                                <?php if ($search_url && $year_letter) : ?>
+                                    <a href="<?php echo esc_url(add_query_arg('year', $year_letter, $search_url)); ?>" class="text-green-700 hover:text-green-900 hover:underline"><?php echo esc_html($year_letter); ?></a>
+                                <?php else : ?>
+                                    <?php echo esc_html($year_letter); ?>
+                                <?php endif; ?>
+                            </dd>
                         </div>
 
                         <div class="border-b border-slate-100 pb-3">
                             <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Sex', 'tailwind-acf'); ?></dt>
-                            <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($sex_labels[$sex] ?? $sex); ?></dd>
+                            <dd class="mt-1 text-base text-slate-900">
+                                <?php if ($search_url && $sex) : ?>
+                                    <a href="<?php echo esc_url(add_query_arg('sex', $sex, $search_url)); ?>" class="text-green-700 hover:text-green-900 hover:underline"><?php echo esc_html($sex_labels[$sex] ?? $sex); ?></a>
+                                <?php else : ?>
+                                    <?php echo esc_html($sex_labels[$sex] ?? $sex); ?>
+                                <?php endif; ?>
+                            </dd>
                         </div>
 
                         <div class="border-b border-slate-100 pb-3">
                             <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Colour', 'tailwind-acf'); ?></dt>
-                            <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($colour_labels[$colour] ?? $colour); ?></dd>
+                            <dd class="mt-1 text-base text-slate-900">
+                                <?php if ($search_url && $colour) : ?>
+                                    <a href="<?php echo esc_url(add_query_arg('colour', $colour, $search_url)); ?>" class="text-green-700 hover:text-green-900 hover:underline"><?php echo esc_html($colour_labels[$colour] ?? $colour); ?></a>
+                                <?php else : ?>
+                                    <?php echo esc_html($colour_labels[$colour] ?? $colour); ?>
+                                <?php endif; ?>
+                            </dd>
                         </div>
                     </dl>
                 </section>

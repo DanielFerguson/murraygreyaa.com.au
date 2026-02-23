@@ -17,6 +17,22 @@ $grade_options  = array( '' => __( 'All Grades', 'tailwind-acf' ) ) + tailwind_c
 $sex_options    = array( '' => __( 'All', 'tailwind-acf' ) ) + tailwind_cattle_get_sex_options();
 $colour_options = array( '' => __( 'All Colours', 'tailwind-acf' ) ) + tailwind_cattle_get_colour_options();
 
+// Stud options (dynamically populated from existing registrations).
+$stud_options = array( '' => __( 'All Studs', 'tailwind-acf' ) );
+$stud_names   = get_transient( 'tailwind_stud_names' );
+if ( false === $stud_names ) {
+	global $wpdb;
+	$stud_names = $wpdb->get_col(
+		"SELECT DISTINCT meta_value FROM {$wpdb->postmeta}
+		WHERE meta_key = 'stud_name' AND meta_value != ''
+		ORDER BY meta_value ASC"
+	);
+	set_transient( 'tailwind_stud_names', $stud_names, HOUR_IN_SECONDS );
+}
+foreach ( $stud_names as $name ) {
+	$stud_options[ $name ] = $name;
+}
+
 // Year letters A-Z.
 $year_options = array( '' => __( 'All Years', 'tailwind-acf' ) );
 foreach ( range( 'A', 'Z' ) as $letter ) {
@@ -32,6 +48,8 @@ $filter_grade = isset( $_GET['grade'] ) ? sanitize_text_field( wp_unslash( $_GET
 $filter_sex = isset( $_GET['sex'] ) ? sanitize_text_field( wp_unslash( $_GET['sex'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $filter_colour = isset( $_GET['colour'] ) ? sanitize_text_field( wp_unslash( $_GET['colour'] ) ) : '';
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$filter_stud = isset( $_GET['stud'] ) ? sanitize_text_field( wp_unslash( $_GET['stud'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $filter_year = isset( $_GET['year'] ) ? sanitize_text_field( wp_unslash( $_GET['year'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -72,6 +90,14 @@ if ( $filter_colour && array_key_exists( $filter_colour, $colour_options ) ) {
 	$meta_query[] = array(
 		'key'     => 'colour',
 		'value'   => $filter_colour,
+		'compare' => '=',
+	);
+}
+
+if ( $filter_stud && array_key_exists( $filter_stud, $stud_options ) ) {
+	$meta_query[] = array(
+		'key'     => 'stud_name',
+		'value'   => $filter_stud,
 		'compare' => '=',
 	);
 }
@@ -177,6 +203,12 @@ if ( $search_query && ! $cattle_query->have_posts() ) {
 				'value' => $filter_colour,
 			);
 		}
+		if ( $filter_stud ) {
+			$filter_meta[] = array(
+				'key'   => 'stud_name',
+				'value' => $filter_stud,
+			);
+		}
 		if ( $filter_year ) {
 			$filter_meta[] = array(
 				'key'   => 'year_letter',
@@ -196,7 +228,7 @@ $sex_labels    = tailwind_cattle_get_sex_labels();
 $colour_labels = tailwind_cattle_get_colour_labels();
 
 // Check if any filters are active.
-$has_filters = $search_query || $filter_grade || $filter_sex || $filter_colour || $filter_year;
+$has_filters = $search_query || $filter_grade || $filter_sex || $filter_colour || $filter_stud || $filter_year;
 
 get_header();
 ?>
@@ -240,7 +272,7 @@ get_header();
 				</div>
 
 				<!-- Filters -->
-				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
 					<!-- Grade -->
 					<div>
 						<label for="grade" class="block text-sm font-medium text-slate-700 mb-1">
@@ -289,6 +321,24 @@ get_header();
 						>
 							<?php foreach ( $colour_options as $value => $label ) : ?>
 								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter_colour, $value ); ?>>
+									<?php echo esc_html( $label ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+
+					<!-- Stud -->
+					<div>
+						<label for="stud" class="block text-sm font-medium text-slate-700 mb-1">
+							<?php esc_html_e( 'Stud', 'tailwind-acf' ); ?>
+						</label>
+						<select
+							name="stud"
+							id="stud"
+							class="block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-green-600 focus:ring-green-600"
+						>
+							<?php foreach ( $stud_options as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter_stud, $value ); ?>>
 									<?php echo esc_html( $label ); ?>
 								</option>
 							<?php endforeach; ?>
@@ -463,6 +513,9 @@ get_header();
 					}
 					if ( $filter_colour ) {
 						$url_params['colour'] = $filter_colour;
+					}
+					if ( $filter_stud ) {
+						$url_params['stud'] = $filter_stud;
 					}
 					if ( $filter_year ) {
 						$url_params['year'] = $filter_year;
