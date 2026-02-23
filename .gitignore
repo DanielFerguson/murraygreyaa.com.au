@@ -36,4 +36,7 @@ wp-config.php
 # htaccess
 /.htaccess
 
+# Node
+node_modules/
+
 # End of https://www.toptal.com/developers/gitignore/api/wordpress

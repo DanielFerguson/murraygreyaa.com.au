@@ -77,24 +77,19 @@ function tailwind_acf_set_default_page_template($post_id, $post, $update)
 add_action('wp_insert_post', 'tailwind_acf_set_default_page_template', 10, 3);
 
 /**
- * Enqueue Tailwind CDN for the front end.
+ * Enqueue compiled Tailwind CSS and theme scripts for the front end.
  */
 function tailwind_acf_enqueue_frontend_assets()
 {
-	wp_enqueue_style(
-		'tailwind-acf-style',
-		get_stylesheet_uri(),
-		array(),
-		TAILWIND_ACF_THEME_VERSION
-	);
-
-	wp_enqueue_script(
-		'tailwind-acf-cdn',
-		'https://cdn.tailwindcss.com?plugins=forms,typography',
-		array(),
-		null,
-		false
-	);
+	$dist_css = get_template_directory() . '/dist/main.css';
+	if (file_exists($dist_css)) {
+		wp_enqueue_style(
+			'tailwind-acf-style',
+			get_template_directory_uri() . '/dist/main.css',
+			array(),
+			filemtime($dist_css)
+		);
+	}
 
 	$carousel_js = get_template_directory() . '/assets/js/carousel.js';
 	if (file_exists($carousel_js)) {
@@ -117,27 +112,6 @@ function tailwind_acf_enqueue_frontend_assets()
 			true
 		);
 	}
-
-	$config = <<<'JS'
-tailwind.config = {
-	theme: {
-		extend: {
-			fontFamily: {
-				sans: ["Inter", "ui-sans-serif", "system-ui"],
-			},
-			colors: {
-				brand: {
-					DEFAULT: "#2563eb",
-					light: "#60a5fa",
-					dark: "#1d4ed8"
-				}
-			}
-		}
-	}
-};
-JS;
-
-	wp_add_inline_script('tailwind-acf-cdn', $config, 'before');
 }
 add_action('wp_enqueue_scripts', 'tailwind_acf_enqueue_frontend_assets');
 

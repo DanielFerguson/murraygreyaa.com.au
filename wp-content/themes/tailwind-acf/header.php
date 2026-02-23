@@ -47,44 +47,60 @@ $nav_classes = 'hidden sm:block font-medium text-white nav-animated';
 
 $main_classes = 'pt-0';
 ?>
-<style>
-	/* Navigation link animations */
-	.nav-animated ul {
-		display: flex;
-		gap: 2rem;
-	}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var dropdowns = document.querySelectorAll('.nav-animated .has-dropdown');
 
-	.nav-animated a {
-		position: relative;
-		padding: 0.5rem 0;
-		transition: color 0.2s ease;
-	}
+	dropdowns.forEach(function(dropdown) {
+		var link = dropdown.querySelector(':scope > a');
 
-	.nav-animated a::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 0;
-		height: 2px;
-		background: linear-gradient(90deg, #fbbf24, #f59e0b);
-		transition: width 0.3s ease;
-		border-radius: 1px;
-	}
+		link.addEventListener('click', function(e) {
+			if (window.innerWidth < 1024) {
+				e.preventDefault();
+				dropdown.classList.toggle('is-open');
 
-	.nav-animated a:hover::after,
-	.nav-animated .current-menu-item a::after {
-		width: 100%;
-	}
+				dropdowns.forEach(function(other) {
+					if (other !== dropdown) {
+						other.classList.remove('is-open');
+					}
+				});
+			}
+		});
+	});
 
-	.nav-animated a:hover {
-		color: #fde68a;
-	}
+	document.addEventListener('click', function(e) {
+		if (!e.target.closest('.has-dropdown')) {
+			dropdowns.forEach(function(dropdown) {
+				dropdown.classList.remove('is-open');
+			});
+		}
+	});
 
-	.nav-animated .current-menu-item a {
-		color: #fde68a;
-	}
-</style>
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape') {
+			dropdowns.forEach(function(dropdown) {
+				dropdown.classList.remove('is-open');
+				var link = dropdown.querySelector(':scope > a');
+				if (link) {
+					link.setAttribute('aria-expanded', 'false');
+				}
+			});
+		}
+	});
+
+	dropdowns.forEach(function(dropdown) {
+		var link = dropdown.querySelector(':scope > a');
+		dropdown.addEventListener('mouseenter', function() {
+			link.setAttribute('aria-expanded', 'true');
+		});
+		dropdown.addEventListener('mouseleave', function() {
+			if (!dropdown.classList.contains('is-open')) {
+				link.setAttribute('aria-expanded', 'false');
+			}
+		});
+	});
+});
+</script>
 
 <body class="<?php echo esc_attr(implode(' ', $body_classes)); ?>">
 	<?php
@@ -111,6 +127,7 @@ $main_classes = 'pt-0';
 						'menu_class'     => '',
 						'fallback_cb'    => false,
 						'container'      => false,
+						'walker'         => class_exists( 'Dropdown_Nav_Walker' ) ? new Dropdown_Nav_Walker() : null,
 					)
 				);
 				?>
