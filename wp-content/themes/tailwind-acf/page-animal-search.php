@@ -25,7 +25,7 @@ foreach ( range( 'A', 'Z' ) as $letter ) {
 
 // Get search parameters from URL (sanitized).
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search, no state change.
-$search_query = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+$search_query = isset( $_GET['animal'] ) ? sanitize_text_field( wp_unslash( $_GET['animal'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $filter_grade = isset( $_GET['grade'] ) ? sanitize_text_field( wp_unslash( $_GET['grade'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -230,7 +230,7 @@ get_header();
 						</div>
 						<input
 							type="text"
-							name="s"
+							name="animal"
 							id="search"
 							value="<?php echo esc_attr( $search_query ); ?>"
 							placeholder="<?php esc_attr_e( 'Search by name, tattoo, breeder, sire, dam...', 'tailwind-acf' ); ?>"
@@ -453,7 +453,7 @@ get_header();
 					$base_url = get_permalink();
 					$url_params = array();
 					if ( $search_query ) {
-						$url_params['s'] = $search_query;
+						$url_params['animal'] = $search_query;
 					}
 					if ( $filter_grade ) {
 						$url_params['grade'] = $filter_grade;
