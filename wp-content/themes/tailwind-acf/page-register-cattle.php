@@ -251,7 +251,7 @@ if (! function_exists('tailwind_cattle_field_error_class')) {
      */
     function tailwind_cattle_field_error_class($field, $field_errors)
     {
-        return isset($field_errors[$field]) ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-brand focus:ring-brand';
+        return isset($field_errors[$field]) ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-brand focus:ring-brand';
     }
 }
 
@@ -303,6 +303,24 @@ if (! function_exists('tailwind_cattle_old_value')) {
                         <li><?php echo esc_html($error); ?></li>
                     <?php endforeach; ?>
                 </ul>
+            </div>
+        <?php endif; ?>
+
+        <?php if ( $is_edit_mode ) : ?>
+            <div class="mb-6 rounded-lg border-l-4 border-blue-500 bg-blue-50 px-4 py-3 text-sm text-blue-800 flex items-center justify-between">
+                <span>
+                    <?php
+                    printf(
+                        /* translators: 1: calf name, 2: tattoo number */
+                        esc_html__( 'Editing: %1$s (%2$s)', 'tailwind-acf' ),
+                        esc_html( tailwind_cattle_old_value( 'calf_name', $form_data ) ),
+                        esc_html( tailwind_cattle_old_value( 'tattoo_number', $form_data ) )
+                    );
+                    ?>
+                </span>
+                <a href="<?php echo esc_url( tailwind_member_get_dashboard_url() ); ?>" class="font-medium text-blue-700 hover:text-blue-900 transition">
+                    <?php esc_html_e( 'Cancel', 'tailwind-acf' ); ?>
+                </a>
             </div>
         <?php endif; ?>
 
@@ -666,6 +684,21 @@ if (! function_exists('tailwind_cattle_old_value')) {
         </form>
     </div>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var form = document.querySelector('#primary form');
+	var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+	if (form && submitBtn) {
+		var originalText = submitBtn.textContent.trim();
+		form.addEventListener('submit', function() {
+			submitBtn.disabled = true;
+			submitBtn.textContent = '<?php echo esc_js( __( 'Submitting...', 'tailwind-acf' ) ); ?>';
+			submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+		});
+	}
+});
+</script>
 
 <?php
 get_footer();
