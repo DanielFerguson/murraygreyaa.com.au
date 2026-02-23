@@ -2,6 +2,7 @@
 export default {
   content: [
     './**/*.php',
+    '!./node_modules/**',
     './assets/js/**/*.js',
   ],
   theme: {
