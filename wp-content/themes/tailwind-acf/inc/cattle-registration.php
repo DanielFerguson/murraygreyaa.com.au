@@ -848,10 +848,10 @@ add_filter( 'bulk_actions-edit-cattle_registration', 'tailwind_cattle_bulk_actio
  *
  * @param string $which Top or bottom.
  */
-function tailwind_cattle_owner_dropdown( $which ) {
-	global $typenow;
+function tailwind_cattle_owner_dropdown() {
+	$screen = get_current_screen();
 
-	if ( 'cattle_registration' !== $typenow || 'top' !== $which ) {
+	if ( ! $screen || 'edit-cattle_registration' !== $screen->id ) {
 		return;
 	}
 
@@ -859,7 +859,8 @@ function tailwind_cattle_owner_dropdown( $which ) {
 		return;
 	}
 
-	$users = get_users(
+	// Get approved members + administrators so admins always appear.
+	$approved = get_users(
 		array(
 			'meta_key'   => 'tailwind_member_status',
 			'meta_value' => 'approved',
@@ -867,21 +868,226 @@ function tailwind_cattle_owner_dropdown( $which ) {
 			'order'      => 'ASC',
 		)
 	);
+	$admins = get_users(
+		array(
+			'role'    => 'administrator',
+			'orderby' => 'display_name',
+			'order'   => 'ASC',
+		)
+	);
+
+	// Merge and deduplicate by user ID.
+	$seen  = array();
+	$users = array();
+	foreach ( array_merge( $admins, $approved ) as $u ) {
+		if ( ! isset( $seen[ $u->ID ] ) ) {
+			$seen[ $u->ID ] = true;
+			$users[]        = $u;
+		}
+	}
+	usort( $users, function ( $a, $b ) {
+		return strcasecmp( $a->display_name, $b->display_name );
+	} );
 
 	?>
-	<label for="cattle_new_owner" class="screen-reader-text"><?php esc_html_e( 'New Owner', 'tailwind-acf' ); ?></label>
-	<select name="cattle_new_owner" id="cattle_new_owner" style="float:none; margin-left: 6px;">
-		<option value=""><?php esc_html_e( '— Select Owner —', 'tailwind-acf' ); ?></option>
-		<option value="0"><?php esc_html_e( 'No Owner (Unassigned)', 'tailwind-acf' ); ?></option>
-		<?php foreach ( $users as $user ) : ?>
-			<option value="<?php echo esc_attr( $user->ID ); ?>">
-				<?php echo esc_html( $user->display_name . ' (' . $user->user_email . ')' ); ?>
+	<div id="cattle-owner-wrap" style="display:none; margin-left:6px;">
+		<select name="cattle_new_owner" id="cattle_new_owner">
+			<option value=""><?php esc_html_e( '— Select Owner —', 'tailwind-acf' ); ?></option>
+			<option value="0"><?php esc_html_e( 'No Owner (Unassigned)', 'tailwind-acf' ); ?></option>
+			<?php foreach ( $users as $user ) : ?>
+				<option value="<?php echo esc_attr( $user->ID ); ?>">
+					<?php echo esc_html( $user->display_name . ' (' . $user->user_email . ')' ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+	</div>
+	<script>
+	(function(){
+		var wrap   = document.getElementById('cattle-owner-wrap');
+		var select = document.getElementById('bulk-action-selector-top');
+		if ( ! wrap || ! select ) return;
+
+		// Move the owner dropdown next to the bulk action Apply button.
+		var applyBtn = document.getElementById('doaction');
+		if ( applyBtn ) {
+			applyBtn.parentNode.insertBefore( wrap, applyBtn );
+		}
+
+		function toggle() {
+			wrap.style.display = ( select.value === 'change_owner' ) ? 'inline-block' : 'none';
+		}
+		select.addEventListener( 'change', toggle );
+		toggle();
+	})();
+	</script>
+	<?php
+}
+add_action( 'admin_footer', 'tailwind_cattle_owner_dropdown' );
+
+/**
+ * Render filter dropdowns (Stud, Sex, Grade) on the cattle admin list.
+ *
+ * @param string $which Top or bottom.
+ */
+function tailwind_cattle_admin_filters( $post_type, $which ) {
+	if ( 'cattle_registration' !== $post_type || 'top' !== $which ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only filter.
+	$current_stud  = isset( $_GET['filter_stud'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_stud'] ) ) : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$current_sex   = isset( $_GET['filter_sex'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_sex'] ) ) : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$current_grade = isset( $_GET['filter_grade'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_grade'] ) ) : '';
+
+	// Get distinct stud names from the database.
+	global $wpdb;
+	$studs = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			WHERE pm.meta_key = %s AND pm.meta_value != '' AND p.post_type = %s
+			ORDER BY pm.meta_value ASC",
+			'stud_name',
+			'cattle_registration'
+		)
+	);
+
+	// Stud dropdown.
+	?>
+	<select name="filter_stud">
+		<option value=""><?php esc_html_e( 'All Studs', 'tailwind-acf' ); ?></option>
+		<?php foreach ( $studs as $stud ) : ?>
+			<option value="<?php echo esc_attr( $stud ); ?>" <?php selected( $current_stud, $stud ); ?>>
+				<?php echo esc_html( $stud ); ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
+	<?php
+
+	// Sex dropdown.
+	$sex_options = tailwind_cattle_get_sex_options();
+	?>
+	<select name="filter_sex">
+		<option value=""><?php esc_html_e( 'All Sex', 'tailwind-acf' ); ?></option>
+		<?php foreach ( $sex_options as $value => $label ) : ?>
+			<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current_sex, $value ); ?>>
+				<?php echo esc_html( $label ); ?>
+			</option>
+		<?php endforeach; ?>
+	</select>
+	<?php
+
+	// Grade dropdown.
+	$grade_options = tailwind_cattle_get_grade_options();
+	?>
+	<select name="filter_grade">
+		<option value=""><?php esc_html_e( 'All Grades', 'tailwind-acf' ); ?></option>
+		<?php foreach ( $grade_options as $value => $label ) : ?>
+			<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current_grade, $value ); ?>>
+				<?php echo esc_html( $label ); ?>
 			</option>
 		<?php endforeach; ?>
 	</select>
 	<?php
 }
-add_action( 'restrict_manage_posts', 'tailwind_cattle_owner_dropdown' );
+add_action( 'restrict_manage_posts', 'tailwind_cattle_admin_filters', 10, 2 );
+
+/**
+ * Apply admin filters and extend search to registration_number and tattoo_number.
+ *
+ * @param WP_Query $query The current query.
+ */
+function tailwind_cattle_admin_filter_query( $query ) {
+	if ( ! is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+
+	if ( 'cattle_registration' !== ( $query->get( 'post_type' ) ) ) {
+		return;
+	}
+
+	$meta_query = $query->get( 'meta_query' ) ?: array();
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin list filter.
+	$filter_stud = isset( $_GET['filter_stud'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_stud'] ) ) : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$filter_sex = isset( $_GET['filter_sex'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_sex'] ) ) : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$filter_grade = isset( $_GET['filter_grade'] ) ? sanitize_text_field( wp_unslash( $_GET['filter_grade'] ) ) : '';
+
+	if ( $filter_stud ) {
+		$meta_query[] = array(
+			'key'     => 'stud_name',
+			'value'   => $filter_stud,
+			'compare' => '=',
+		);
+	}
+
+	if ( $filter_sex ) {
+		$meta_query[] = array(
+			'key'     => 'sex',
+			'value'   => $filter_sex,
+			'compare' => '=',
+		);
+	}
+
+	if ( $filter_grade ) {
+		$meta_query[] = array(
+			'key'     => 'grade',
+			'value'   => $filter_grade,
+			'compare' => '=',
+		);
+	}
+
+	if ( ! empty( $meta_query ) ) {
+		$query->set( 'meta_query', $meta_query );
+	}
+
+	// Extend the default search to include registration_number and tattoo_number.
+	$search = $query->get( 's' );
+	if ( $search ) {
+		$query->set( 's', '' );
+		$query->set( 'tailwind_cattle_search', $search );
+	}
+}
+add_action( 'pre_get_posts', 'tailwind_cattle_admin_filter_query' );
+
+/**
+ * Modify the WHERE clause to search registration_number and tattoo_number in addition to post title.
+ *
+ * @param string   $where The WHERE clause.
+ * @param WP_Query $query The current query.
+ * @return string
+ */
+function tailwind_cattle_admin_search_where( $where, $query ) {
+	if ( ! is_admin() || ! $query->is_main_query() ) {
+		return $where;
+	}
+
+	$search = $query->get( 'tailwind_cattle_search' );
+	if ( ! $search ) {
+		return $where;
+	}
+
+	global $wpdb;
+	$like = '%' . $wpdb->esc_like( $search ) . '%';
+
+	$where .= $wpdb->prepare(
+		" AND ({$wpdb->posts}.post_title LIKE %s
+		OR {$wpdb->posts}.ID IN (
+			SELECT post_id FROM {$wpdb->postmeta}
+			WHERE (meta_key = 'registration_number' OR meta_key = 'tattoo_number')
+			AND meta_value LIKE %s
+		))",
+		$like,
+		$like
+	);
+
+	return $where;
+}
+add_filter( 'posts_where', 'tailwind_cattle_admin_search_where', 10, 2 );
 
 /**
  * Handle the "Change Owner" bulk action.
@@ -994,3 +1200,53 @@ function tailwind_render_pedigree_box( $ancestor, $label ) {
 	<?php
 }
 
+/**
+ * Output JSON-LD structured data for cattle registration pages.
+ */
+function tailwind_cattle_structured_data() {
+	if ( ! is_singular( 'cattle_registration' ) ) {
+		return;
+	}
+
+	$post_id   = get_the_ID();
+	$calf_name = get_field( 'calf_name', $post_id );
+	$tattoo    = get_field( 'tattoo_number', $post_id );
+	$grade     = get_field( 'grade', $post_id );
+	$sex       = get_field( 'sex', $post_id );
+	$dob       = get_field( 'date_of_birth', $post_id );
+
+	$grade_labels = tailwind_cattle_get_grade_labels();
+	$sex_labels   = tailwind_cattle_get_sex_labels();
+
+	$schema = array(
+		'@context'    => 'https://schema.org',
+		'@type'       => 'Thing',
+		'name'        => $calf_name,
+		'identifier'  => $tattoo,
+		'description' => sprintf(
+			/* translators: 1: grade, 2: sex, 3: breed */
+			__( '%1$s %2$s Murray Grey cattle', 'tailwind-acf' ),
+			$grade_labels[ $grade ] ?? $grade,
+			$sex_labels[ $sex ] ?? $sex
+		),
+		'url'         => get_permalink( $post_id ),
+	);
+
+	if ( $dob ) {
+		$schema['dateCreated'] = $dob;
+	}
+
+	$author = get_userdata( get_post_field( 'post_author', $post_id ) );
+	if ( $author ) {
+		$schema['creator'] = array(
+			'@type' => 'Person',
+			'name'  => $author->display_name,
+		);
+	}
+
+	printf(
+		'<script type="application/ld+json">%s</script>' . "\n",
+		wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+	);
+}
+add_action( 'wp_head', 'tailwind_cattle_structured_data' );
