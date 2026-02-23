@@ -287,6 +287,33 @@ function tailwind_register_cattle_acf_fields() {
 					'type'     => 'text',
 					'required' => 1,
 				),
+				// Registration Details Section.
+				array(
+					'key'          => 'field_cattle_registration_number',
+					'label'        => __( 'Registration Number', 'tailwind-acf' ),
+					'name'         => 'registration_number',
+					'type'         => 'text',
+					'instructions' => __( 'Full registration number (e.g., RIB G70)', 'tailwind-acf' ),
+				),
+				array(
+					'key'   => 'field_cattle_stud_name',
+					'label' => __( 'Stud Name', 'tailwind-acf' ),
+					'name'  => 'stud_name',
+					'type'  => 'text',
+				),
+				array(
+					'key'   => 'field_cattle_herd_book',
+					'label' => __( 'Herd Book', 'tailwind-acf' ),
+					'name'  => 'herd_book',
+					'type'  => 'number',
+				),
+				array(
+					'key'          => 'field_cattle_brand_tattoo',
+					'label'        => __( 'Brand Tattoo', 'tailwind-acf' ),
+					'name'         => 'brand_tattoo',
+					'type'         => 'text',
+					'instructions' => __( 'Tattoo prefix (e.g., RIB, WIN)', 'tailwind-acf' ),
+				),
 				// Birth Details Section.
 				array(
 					'key'           => 'field_cattle_date_of_birth',
@@ -377,6 +404,52 @@ function tailwind_register_cattle_acf_fields() {
 					'key'   => 'field_cattle_dam_tattoo',
 					'label' => __( "Dam's Registration Number/Tattoo", 'tailwind-acf' ),
 					'name'  => 'dam_tattoo',
+					'type'  => 'text',
+				),
+				// Parentage Relationships (post object links).
+				array(
+					'key'           => 'field_cattle_sire_id',
+					'label'         => __( 'Sire (Linked Animal)', 'tailwind-acf' ),
+					'name'          => 'sire_id',
+					'type'          => 'post_object',
+					'post_type'     => array( 'cattle_registration' ),
+					'return_format' => 'id',
+					'allow_null'    => 1,
+					'ui'            => 1,
+				),
+				array(
+					'key'           => 'field_cattle_dam_id',
+					'label'         => __( 'Dam (Linked Animal)', 'tailwind-acf' ),
+					'name'          => 'dam_id',
+					'type'          => 'post_object',
+					'post_type'     => array( 'cattle_registration' ),
+					'return_format' => 'id',
+					'allow_null'    => 1,
+					'ui'            => 1,
+				),
+				// Extended Parentage Details.
+				array(
+					'key'   => 'field_cattle_sire_herd_book',
+					'label' => __( 'Sire Herd Book', 'tailwind-acf' ),
+					'name'  => 'sire_herd_book',
+					'type'  => 'number',
+				),
+				array(
+					'key'   => 'field_cattle_sire_grade',
+					'label' => __( 'Sire Grade', 'tailwind-acf' ),
+					'name'  => 'sire_grade',
+					'type'  => 'text',
+				),
+				array(
+					'key'   => 'field_cattle_dam_herd_book',
+					'label' => __( 'Dam Herd Book', 'tailwind-acf' ),
+					'name'  => 'dam_herd_book',
+					'type'  => 'number',
+				),
+				array(
+					'key'   => 'field_cattle_dam_grade',
+					'label' => __( 'Dam Grade', 'tailwind-acf' ),
+					'name'  => 'dam_grade',
 					'type'  => 'text',
 				),
 			),
