@@ -655,3 +655,29 @@ add_filter( 'wp_img_tag_add_loading_attr', function ( $value, $image, $context )
 	}
 	return $value;
 }, 10, 3 );
+
+/**
+ * Set a default Open Graph image for cattle registrations.
+ *
+ * @param array $image OG image array from Yoast.
+ * @return array
+ */
+function tailwind_cattle_og_image( $image ) {
+	if ( ! is_singular( 'cattle_registration' ) ) {
+		return $image;
+	}
+
+	// If Yoast already found an image, keep it.
+	if ( ! empty( $image ) ) {
+		return $image;
+	}
+
+	// Use the site icon as fallback OG image.
+	$icon_url = get_site_icon_url( 512 );
+	if ( $icon_url ) {
+		return $icon_url;
+	}
+
+	return $image;
+}
+add_filter( 'wpseo_opengraph_image', 'tailwind_cattle_og_image' );
