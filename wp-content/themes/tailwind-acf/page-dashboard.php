@@ -146,13 +146,15 @@ if ( TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists( 'cattle_re
 					<?php endif; ?>
 
 					<?php
-					// Count pending registrations.
-					$pending_count = 0;
-					foreach ( $user_registrations as $reg ) {
-						if ( 'pending' === $reg->post_status ) {
-							$pending_count++;
-						}
-					}
+					// Count all pending registrations (not just current page).
+					$pending_query = new WP_Query( array(
+						'post_type'      => 'cattle_registration',
+						'author'         => $current_user->ID,
+						'post_status'    => 'pending',
+						'posts_per_page' => 1,
+						'fields'         => 'ids',
+					) );
+					$pending_count = $pending_query->found_posts;
 					?>
 
 					<!-- Cattle Registrations Section -->
@@ -254,7 +256,8 @@ if ( TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists( 'cattle_re
 												<a href="<?php echo esc_url( get_permalink( $registration ) ); ?>" class="text-brand hover:text-brand-dark transition">
 													<?php esc_html_e( 'View', 'tailwind-acf' ); ?>
 												</a>
-											<?php elseif ( 'pending' === $registration->post_status && $register_cattle_url ) : ?>
+											<?php endif; ?>
+											<?php if ( 'pending' === $registration->post_status && $register_cattle_url ) : ?>
 												<a href="<?php echo esc_url( add_query_arg( 'edit', $registration->ID, $register_cattle_url ) ); ?>" class="text-brand hover:text-brand-dark transition">
 													<?php esc_html_e( 'Edit', 'tailwind-acf' ); ?>
 												</a>
@@ -273,7 +276,7 @@ if ( TAILWIND_MEMBER_STATUS_APPROVED === $status && post_type_exists( 'cattle_re
 										?>
 										<a
 											href="<?php echo esc_url( $page_url ); ?>"
-											class="inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm font-medium transition <?php echo $is_current ? 'bg-green-700 border-green-700 text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50'; ?>"
+											class="<?php echo esc_attr( 'inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm font-medium transition ' . ( $is_current ? 'bg-green-700 border-green-700 text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50' ) ); ?>"
 											<?php if ( $is_current ) : ?>aria-current="page"<?php endif; ?>
 										>
 											<?php echo esc_html( $i ); ?>
