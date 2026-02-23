@@ -32,6 +32,79 @@ while (have_posts()) :
     $sire_tattoo = get_field('sire_tattoo', $post_id);
     $dam_name  = get_field('dam_name', $post_id);
     $dam_tattoo = get_field('dam_tattoo', $post_id);
+    $sire_id   = get_field('sire_id', $post_id);
+    $dam_id    = get_field('dam_id', $post_id);
+    $registration_number = get_field('registration_number', $post_id);
+    $stud_name = get_field('stud_name', $post_id);
+    $brand_tattoo = get_field('brand_tattoo', $post_id);
+
+    // Build pedigree data.
+    $pedigree = array(
+        'sire' => null,
+        'dam'  => null,
+        'sire_sire' => null,
+        'sire_dam'  => null,
+        'dam_sire'  => null,
+        'dam_dam'   => null,
+    );
+
+    // Sire
+    if ($sire_id) {
+        $pedigree['sire'] = array(
+            'id'   => $sire_id,
+            'name' => get_field('calf_name', $sire_id) ?: get_the_title($sire_id),
+            'regn' => get_field('registration_number', $sire_id) ?: get_field('tattoo_number', $sire_id),
+            'url'  => get_permalink($sire_id),
+        );
+        $ss = get_field('sire_id', $sire_id);
+        $sd = get_field('dam_id', $sire_id);
+        if ($ss) {
+            $pedigree['sire_sire'] = array(
+                'id' => $ss, 'name' => get_field('calf_name', $ss) ?: get_the_title($ss),
+                'regn' => get_field('registration_number', $ss) ?: get_field('tattoo_number', $ss),
+                'url' => get_permalink($ss),
+            );
+        }
+        if ($sd) {
+            $pedigree['sire_dam'] = array(
+                'id' => $sd, 'name' => get_field('calf_name', $sd) ?: get_the_title($sd),
+                'regn' => get_field('registration_number', $sd) ?: get_field('tattoo_number', $sd),
+                'url' => get_permalink($sd),
+            );
+        }
+    } elseif ($sire_name || $sire_tattoo) {
+        $pedigree['sire'] = array('id' => null, 'name' => $sire_name, 'regn' => $sire_tattoo, 'url' => null);
+    }
+
+    // Dam
+    if ($dam_id) {
+        $pedigree['dam'] = array(
+            'id'   => $dam_id,
+            'name' => get_field('calf_name', $dam_id) ?: get_the_title($dam_id),
+            'regn' => get_field('registration_number', $dam_id) ?: get_field('tattoo_number', $dam_id),
+            'url'  => get_permalink($dam_id),
+        );
+        $ds = get_field('sire_id', $dam_id);
+        $dd = get_field('dam_id', $dam_id);
+        if ($ds) {
+            $pedigree['dam_sire'] = array(
+                'id' => $ds, 'name' => get_field('calf_name', $ds) ?: get_the_title($ds),
+                'regn' => get_field('registration_number', $ds) ?: get_field('tattoo_number', $ds),
+                'url' => get_permalink($ds),
+            );
+        }
+        if ($dd) {
+            $pedigree['dam_dam'] = array(
+                'id' => $dd, 'name' => get_field('calf_name', $dd) ?: get_the_title($dd),
+                'regn' => get_field('registration_number', $dd) ?: get_field('tattoo_number', $dd),
+                'url' => get_permalink($dd),
+            );
+        }
+    } elseif ($dam_name || $dam_tattoo) {
+        $pedigree['dam'] = array('id' => null, 'name' => $dam_name, 'regn' => $dam_tattoo, 'url' => null);
+    }
+
+    $has_any_lineage = $pedigree['sire'] || $pedigree['dam'];
 
     // Labels.
     $grade_labels   = tailwind_cattle_get_grade_labels();
@@ -84,6 +157,27 @@ while (have_posts()) :
                     </h2>
 
                     <dl class="grid gap-4 sm:grid-cols-2">
+                        <?php if ($registration_number) : ?>
+                            <div class="border-b border-slate-100 pb-3">
+                                <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Registration', 'tailwind-acf'); ?></dt>
+                                <dd class="mt-1 text-base font-mono text-slate-900"><?php echo esc_html($registration_number); ?></dd>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($stud_name) : ?>
+                            <div class="border-b border-slate-100 pb-3">
+                                <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Stud', 'tailwind-acf'); ?></dt>
+                                <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($stud_name); ?></dd>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($brand_tattoo) : ?>
+                            <div class="border-b border-slate-100 pb-3">
+                                <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Brand Tattoo', 'tailwind-acf'); ?></dt>
+                                <dd class="mt-1 text-base font-mono text-slate-900"><?php echo esc_html($brand_tattoo); ?></dd>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="border-b border-slate-100 pb-3">
                             <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Grade', 'tailwind-acf'); ?></dt>
                             <dd class="mt-1 text-base text-slate-900"><?php echo esc_html($grade_labels[$grade] ?? $grade); ?></dd>
@@ -156,38 +250,59 @@ while (have_posts()) :
                     </dl>
                 </section>
 
-                <!-- Parentage -->
-                <?php if ($sire_name || $dam_name) : ?>
+                <!-- Pedigree -->
+                <?php if ($has_any_lineage) : ?>
                     <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                         <h2 class="mb-6 text-lg font-semibold text-slate-900">
-                            <?php esc_html_e('Parentage', 'tailwind-acf'); ?>
+                            <?php esc_html_e('Pedigree', 'tailwind-acf'); ?>
                         </h2>
 
-                        <dl class="grid gap-6 sm:grid-cols-2">
-                            <?php if ($sire_name) : ?>
-                                <div>
-                                    <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Sire', 'tailwind-acf'); ?></dt>
-                                    <dd class="mt-1">
-                                        <p class="text-base font-medium text-slate-900"><?php echo esc_html($sire_name); ?></p>
-                                        <?php if ($sire_tattoo) : ?>
-                                            <p class="text-sm text-slate-600 font-mono"><?php echo esc_html($sire_tattoo); ?></p>
-                                        <?php endif; ?>
-                                    </dd>
+                        <!-- Desktop: horizontal pedigree -->
+                        <div class="hidden md:block">
+                            <div class="flex items-stretch gap-0">
+                                <!-- Generation 1: Parents -->
+                                <div class="flex flex-col justify-center gap-4 min-w-[200px]">
+                                    <?php tailwind_render_pedigree_box($pedigree['sire'], __('Sire', 'tailwind-acf')); ?>
+                                    <?php tailwind_render_pedigree_box($pedigree['dam'], __('Dam', 'tailwind-acf')); ?>
                                 </div>
-                            <?php endif; ?>
 
-                            <?php if ($dam_name) : ?>
+                                <!-- Connector -->
+                                <div class="flex flex-col justify-center w-8">
+                                    <div class="flex-1 border-b-2 border-l-2 border-slate-200 rounded-bl-lg"></div>
+                                    <div class="flex-1 border-t-2 border-l-2 border-slate-200 rounded-tl-lg"></div>
+                                </div>
+
+                                <!-- Generation 2: Grandparents -->
+                                <div class="flex flex-col justify-between gap-2 min-w-[200px]">
+                                    <?php tailwind_render_pedigree_box($pedigree['sire_sire'], __("Sire's Sire", 'tailwind-acf')); ?>
+                                    <?php tailwind_render_pedigree_box($pedigree['sire_dam'], __("Sire's Dam", 'tailwind-acf')); ?>
+                                    <?php tailwind_render_pedigree_box($pedigree['dam_sire'], __("Dam's Sire", 'tailwind-acf')); ?>
+                                    <?php tailwind_render_pedigree_box($pedigree['dam_dam'], __("Dam's Dam", 'tailwind-acf')); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile: stacked pedigree -->
+                        <div class="md:hidden space-y-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-500 mb-2"><?php esc_html_e('Parents', 'tailwind-acf'); ?></h3>
+                                <div class="space-y-3">
+                                    <?php tailwind_render_pedigree_box($pedigree['sire'], __('Sire', 'tailwind-acf')); ?>
+                                    <?php tailwind_render_pedigree_box($pedigree['dam'], __('Dam', 'tailwind-acf')); ?>
+                                </div>
+                            </div>
+                            <?php if ($pedigree['sire_sire'] || $pedigree['sire_dam'] || $pedigree['dam_sire'] || $pedigree['dam_dam']) : ?>
                                 <div>
-                                    <dt class="text-sm font-medium text-slate-500"><?php esc_html_e('Dam', 'tailwind-acf'); ?></dt>
-                                    <dd class="mt-1">
-                                        <p class="text-base font-medium text-slate-900"><?php echo esc_html($dam_name); ?></p>
-                                        <?php if ($dam_tattoo) : ?>
-                                            <p class="text-sm text-slate-600 font-mono"><?php echo esc_html($dam_tattoo); ?></p>
-                                        <?php endif; ?>
-                                    </dd>
+                                    <h3 class="text-sm font-semibold text-slate-500 mb-2"><?php esc_html_e('Grandparents', 'tailwind-acf'); ?></h3>
+                                    <div class="space-y-3 pl-4 border-l-2 border-slate-200">
+                                        <?php tailwind_render_pedigree_box($pedigree['sire_sire'], __("Sire's Sire", 'tailwind-acf')); ?>
+                                        <?php tailwind_render_pedigree_box($pedigree['sire_dam'], __("Sire's Dam", 'tailwind-acf')); ?>
+                                        <?php tailwind_render_pedigree_box($pedigree['dam_sire'], __("Dam's Sire", 'tailwind-acf')); ?>
+                                        <?php tailwind_render_pedigree_box($pedigree['dam_dam'], __("Dam's Dam", 'tailwind-acf')); ?>
+                                    </div>
                                 </div>
                             <?php endif; ?>
-                        </dl>
+                        </div>
                     </section>
                 <?php endif; ?>
 

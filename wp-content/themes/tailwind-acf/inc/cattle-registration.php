@@ -959,3 +959,38 @@ function tailwind_cattle_bulk_owner_notices() {
 }
 add_action( 'admin_notices', 'tailwind_cattle_bulk_owner_notices' );
 
+/**
+ * Render a pedigree box for an ancestor.
+ *
+ * @param array|null $ancestor Ancestor data (id, name, regn, url) or null.
+ * @param string     $label    Relationship label (e.g., "Sire", "Dam").
+ */
+function tailwind_render_pedigree_box( $ancestor, $label ) {
+	if ( ! $ancestor ) {
+		?>
+		<div class="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-center">
+			<p class="text-xs font-medium text-slate-400"><?php echo esc_html( $label ); ?></p>
+			<p class="text-sm text-slate-400 italic"><?php esc_html_e( 'Unknown', 'tailwind-acf' ); ?></p>
+		</div>
+		<?php
+		return;
+	}
+
+	$tag   = $ancestor['url'] ? 'a' : 'div';
+	$attrs = $ancestor['url'] ? ' href="' . esc_url( $ancestor['url'] ) . '"' : '';
+	$hover = $ancestor['url'] ? ' hover:border-green-300 hover:shadow-md transition' : '';
+	$link_class = $ancestor['url'] ? ' cursor-pointer' : '';
+
+	?>
+	<<?php echo $tag; ?><?php echo $attrs; ?> class="block rounded-lg border border-slate-200 bg-white p-3<?php echo esc_attr( $hover . $link_class ); ?>">
+		<p class="text-xs font-medium text-slate-400"><?php echo esc_html( $label ); ?></p>
+		<p class="text-sm font-semibold <?php echo $ancestor['url'] ? 'text-green-700' : 'text-slate-900'; ?>">
+			<?php echo esc_html( $ancestor['name'] ?: '—' ); ?>
+		</p>
+		<?php if ( $ancestor['regn'] ) : ?>
+			<p class="text-xs font-mono text-slate-500"><?php echo esc_html( $ancestor['regn'] ); ?></p>
+		<?php endif; ?>
+	</<?php echo $tag; ?>>
+	<?php
+}
+
