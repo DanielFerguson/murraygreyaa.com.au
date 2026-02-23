@@ -109,13 +109,14 @@ if (is_array($background_image) && ! empty($background_image['url'])) {
 	<!-- Background with enhanced gradient overlay -->
 	<div class="absolute inset-0 overflow-hidden">
 		<?php if ($bg_url) : ?>
-			<img 
-				class="h-full w-full object-cover scale-105" 
-				data-parallax-speed="0.15" 
-				data-parallax-max="36" 
-				src="<?php echo $bg_url; ?>" 
-				alt="" 
-				role="presentation" 
+			<img
+				class="h-full w-full object-cover"
+				style="transform: scale(1.05) translateY(var(--parallax-y, 0px))"
+				data-parallax-speed="0.15"
+				data-parallax-max="36"
+				src="<?php echo $bg_url; ?>"
+				alt=""
+				role="presentation"
 				decoding="async"
 			>
 			<!-- Multi-layer gradient overlay -->

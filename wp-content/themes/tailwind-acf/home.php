@@ -22,7 +22,6 @@ $paged = max(1, get_query_var('paged'), get_query_var('page'));
 
 $featured_query = null;
 $featured_post  = null;
-$offset         = 0;
 
 if (1 === $paged) {
 	$featured_query = new WP_Query(
@@ -36,21 +35,21 @@ if (1 === $paged) {
 	if ($featured_query->have_posts()) {
 		$featured_query->the_post();
 		$featured_post = get_post();
-		$offset        = 1;
 	}
 
 	wp_reset_postdata();
 }
 
-$rest_query = new WP_Query(
-	array(
-		'post_type'      => 'post',
-		'post_status'    => 'publish',
-		'posts_per_page' => get_option('posts_per_page'),
-		'paged'          => $paged,
-		'offset'         => $offset,
-	)
+$rest_args = array(
+	'post_type'      => 'post',
+	'post_status'    => 'publish',
+	'posts_per_page' => get_option( 'posts_per_page' ),
+	'paged'          => $paged,
 );
+if ( $featured_post ) {
+	$rest_args['post__not_in'] = array( $featured_post->ID );
+}
+$rest_query = new WP_Query( $rest_args );
 
 $page_title   = get_the_title(get_option('page_for_posts')) ?: __('Latest News', 'tailwind-acf');
 $page_excerpt = '';
